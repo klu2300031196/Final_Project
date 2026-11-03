@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevOps Target Application (AUT) - E-Commerce & Cloud Services</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #0b0f19;
@@ -16,6 +16,7 @@
             --text-main: #f1f5f9;
             --text-sub: #94a3b8;
             --danger: #ef4444;
+            --warning: #f59e0b;
             --card-bg: #18243b;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
@@ -27,15 +28,19 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 40;
         }
         .logo { font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
         .logo-badge { background: var(--primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; }
-        .nav-status { display: flex; align-items: center; gap: 1.5rem; }
-        .badge { padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+        .nav-status { display: flex; align-items: center; gap: 1rem; }
+        .badge { padding: 0.35rem 0.75rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; }
         .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
         .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+        .badge-user { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid #8b5cf6; cursor: pointer; }
         
-        main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; width: 100%; flex: 1; }
+        main { max-width: 1250px; margin: 2rem auto; padding: 0 1rem; width: 100%; flex: 1; }
         .hero {
             background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
             border: 1px solid var(--border);
@@ -45,6 +50,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1.5rem;
         }
         .hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
         .hero p { color: var(--text-sub); font-size: 0.95rem; max-width: 650px; }
@@ -58,14 +64,45 @@
             cursor: pointer;
             transition: 0.2s;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
         }
-        .btn:hover { background: var(--primary-hover); }
+        .btn:hover { background: var(--primary-hover); transform: translateY(-1px); }
         .btn-success { background: var(--accent); }
         .btn-success:hover { background: #059669; }
+        .btn-secondary { background: #1e293b; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-secondary:hover { background: #334155; }
+        .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.4rem 0.8rem;
+            min-width: 280px;
+        }
+        .search-box input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            outline: none;
+            width: 100%;
+            font-size: 0.9rem;
+        }
 
         .tabs { display: flex; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
-        .tab { padding: 0.75rem 1rem; cursor: pointer; color: var(--text-sub); border-bottom: 2px solid transparent; font-weight: 600; }
+        .tab { padding: 0.75rem 1rem; cursor: pointer; color: var(--text-sub); border-bottom: 2px solid transparent; font-weight: 600; font-size: 0.95rem; }
         .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -77,20 +114,23 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            transition: 0.2s;
         }
+        .card:hover { border-color: var(--primary); }
         .card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
         .card .category { font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; }
         .card .desc { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 1rem; flex: 1; }
-        .card .bottom { display: flex; justify-content: space-between; align-items: center; }
+        .card .bottom { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem; }
         .card .price { font-size: 1.25rem; font-weight: 700; color: #fff; }
         .stock-tag { font-size: 0.75rem; color: #34d399; }
+        .stock-out { color: #f87171; }
 
         .api-docs-box {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 1.5rem;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
@@ -101,7 +141,92 @@
         .method-patch { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
         .method-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
 
-        footer { text-align: center; padding: 1.5rem; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 0.85rem; }
+        .status-pill { padding: 0.25rem 0.6rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+        .status-shipped { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s ease-in-out;
+        }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 520px;
+            padding: 1.5rem;
+            position: relative;
+            transform: scale(0.95);
+            transition: 0.2s;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-overlay.active .modal { transform: scale(1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 0.85rem; margin-bottom: 1rem; }
+        .modal-title { font-size: 1.15rem; font-weight: 700; }
+        .close-btn { background: transparent; border: none; color: var(--text-sub); font-size: 1.25rem; cursor: pointer; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 0.4rem; font-weight: 600; }
+        .form-input {
+            width: 100%;
+            background: #0b0f19;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 0.8rem;
+            color: #fff;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        .form-input:focus { border-color: var(--primary); }
+
+        /* CART FLOATING PILL */
+        .cart-pill {
+            background: var(--primary);
+            color: white;
+            padding: 0.4rem 0.9rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: none;
+            transition: 0.2s;
+        }
+        .cart-pill:hover { background: var(--primary-hover); }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #1e293b;
+            color: #fff;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--accent);
+            padding: 0.85rem 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        footer { text-align: center; padding: 1.5rem; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 0.85rem; margin-top: 2rem; }
     </style>
 </head>
 <body>
@@ -111,9 +236,14 @@
             <span class="logo-badge">AUT Live Target</span>
         </div>
         <div class="nav-status">
-            <span class="badge badge-green" id="health-badge">● Health: UP</span>
+            <span class="badge badge-green" id="health-badge">● Health: Checking...</span>
             <span class="badge badge-blue" id="uptime-badge">Uptime: 0s</span>
-            <a href="http://localhost:8080" target="_blank" class="btn btn-success" style="font-size:0.85rem;">Open Testing Dashboard 🚀</a>
+            <button class="badge badge-user" id="user-badge" onclick="openAuthModal()">👤 Guest (Sign In)</button>
+            <button class="cart-pill" onclick="openCartModal()">
+                <span>🛒 Cart</span>
+                <span id="cart-count" style="background:#fff; color:#1e3a8a; border-radius:50%; width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; font-size:0.75rem;">0</span>
+            </button>
+            <a href="http://localhost:8080" target="_blank" class="btn btn-success" style="font-size:0.85rem;">Open Testing Hub 🚀</a>
         </div>
     </header>
 
@@ -124,22 +254,59 @@
                 <p>This is the real-time application under test for our DevOps-based Continuous Testing Framework. It processes user auth, catalog requests, complex pricing, state transitions, and simulated payment gateways.</p>
             </div>
             <div>
-                <button class="btn" onclick="testOrderFlow()">Run Quick Checkout Simulation</button>
+                <button class="btn btn-primary" onclick="runQuickCheckoutSimulation()">⚡ Run Quick Checkout Simulation</button>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <div class="search-box">
+                <span style="color:var(--text-sub); margin-right:0.5rem;">🔍</span>
+                <input type="text" id="search-input" placeholder="Search products by keyword..." oninput="handleSearch()">
+            </div>
+            <div style="display:flex; gap:0.5rem;">
+                <button class="btn btn-sm btn-secondary" onclick="filterCategory('')">All</button>
+                <button class="btn btn-sm btn-secondary" onclick="filterCategory('Software')">Software</button>
+                <button class="btn btn-sm btn-secondary" onclick="filterCategory('Tools')">Tools</button>
+                <button class="btn btn-sm btn-secondary" onclick="filterCategory('Security')">Security</button>
+                <button class="btn btn-sm btn-secondary" onclick="filterCategory('Automation')">Automation</button>
             </div>
         </div>
 
         <div class="tabs">
             <div class="tab active" onclick="switchTab('catalog')">Product Catalog</div>
+            <div class="tab" onclick="switchTab('orders')">My Orders & Database Records</div>
             <div class="tab" onclick="switchTab('api-explorer')">API Endpoints</div>
-            <div class="tab" onclick="switchTab('live-telemetry')">Live Metrics</div>
+            <div class="tab" onclick="switchTab('live-telemetry')">Live Telemetry & Metrics</div>
         </div>
 
+        <!-- TAB 1: PRODUCT CATALOG -->
         <section id="catalog-tab">
             <div class="grid" id="product-grid">
                 <div style="color:var(--text-sub);">Loading products from AUT REST API...</div>
             </div>
         </section>
 
+        <!-- TAB 2: MY ORDERS & DATABASE RECORDS -->
+        <section id="orders-tab" style="display:none;">
+            <div class="api-docs-box">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h2>Active Orders Stored in SQLite Database</h2>
+                    <button class="btn btn-sm btn-secondary" onclick="loadOrders()">🔄 Refresh Orders</button>
+                </div>
+                <div id="orders-container">
+                    <table id="orders-table">
+                        <thead>
+                            <tr><th>Order ID</th><th>Date Placed</th><th>Items & Units</th><th>Subtotal</th><th>Discount</th><th>Total Amount</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="orders-tbody">
+                            <tr><td colspan="8" style="text-align:center; color:var(--text-sub);">Loading saved orders from database...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: API EXPLORER -->
         <section id="api-explorer-tab" style="display:none;">
             <div class="api-docs-box">
                 <h2>Application REST Endpoints Under Continuous Testing</h2>
@@ -155,26 +322,150 @@
                         <tr><td><span class="method method-get">GET</span></td><td><code>/api/products</code></td><td>Product catalog with search/filter</td><td>Integration & E2E</td></tr>
                         <tr><td><span class="method method-post">POST</span></td><td><code>/api/orders</code></td><td>Order checkout with promo & inventory rules</td><td>Unit & Integration</td></tr>
                         <tr><td><span class="method method-post">POST</span></td><td><code>/api/orders/{id}/pay</code></td><td>Payment processing & state transition</td><td>Integration & Performance</td></tr>
+                        <tr><td><span class="method method-get">GET</span></td><td><code>/api/test-records</code></td><td>Retrieve persisted DevOps test pipeline runs</td><td>Quality Gate</td></tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
+        <!-- TAB 4: LIVE TELEMETRY -->
         <section id="live-telemetry-tab" style="display:none;">
             <div class="api-docs-box">
                 <h2>DevOps Live Telemetry Metrics</h2>
-                <div style="margin-top: 1rem; font-family: monospace; background: #000; padding: 1rem; border-radius: 6px;" id="metrics-json">
+                <div style="margin-top: 1rem; font-family: monospace; background: #000; padding: 1rem; border-radius: 6px; color:#38bdf8;" id="metrics-json">
                     Loading metrics...
                 </div>
             </div>
         </section>
     </main>
 
+    <!-- AUTHENTICATION MODAL -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="auth-title">Sign In to AUT Microservice</div>
+                <button class="close-btn" onclick="closeAuthModal()">&times;</button>
+            </div>
+            <div id="auth-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="auth-username" class="form-input" placeholder="e.g. john_doe or admin" value="john_doe">
+                </div>
+                <div class="form-group" id="email-group" style="display:none;">
+                    <label>Email Address</label>
+                    <input type="email" id="auth-email" class="form-input" placeholder="e.g. john@example.com" value="john@example.com">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="auth-password" class="form-input" placeholder="••••••••" value="User@123">
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem;">
+                    <a href="javascript:void(0)" onclick="toggleAuthMode()" style="color:var(--primary); font-size:0.85rem;" id="toggle-auth-btn">Don't have an account? Register</a>
+                    <button class="btn btn-primary" id="auth-submit-btn" onclick="submitAuth()">Sign In</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CART & CHECKOUT MODAL -->
+    <div class="modal-overlay" id="cart-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Shopping Cart &amp; Order Checkout</div>
+                <button class="close-btn" onclick="closeCartModal()">&times;</button>
+            </div>
+            <div id="cart-items-list" style="margin-bottom:1.5rem; max-height:220px; overflow-y:auto;">
+                <!-- Injected dynamically -->
+            </div>
+            
+            <div style="border-top:1px solid var(--border); padding-top:1rem;">
+                <div class="form-group">
+                    <label>Promotional Code</label>
+                    <div style="display:flex; gap:0.5rem;">
+                        <input type="text" id="cart-promo-code" class="form-input" placeholder="Try DEVOPS20 for 20% off" value="DEVOPS20">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem;">
+                    <span style="color:var(--text-sub);">Subtotal:</span>
+                    <strong id="cart-subtotal">$0.00</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-size:0.9rem; color:#34d399;">
+                    <span>Estimated Discount:</span>
+                    <strong id="cart-discount">-$0.00</strong>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:1.1rem; border-top:1px solid var(--border); padding-top:0.5rem;">
+                    <span>Estimated Total:</span>
+                    <strong id="cart-total" style="color:var(--primary);">$0.00</strong>
+                </div>
+                <button class="btn btn-primary" style="width:100%; justify-content:center;" onclick="submitOrderCheckout()">Proceed to Checkout (Create Order)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Payment Gateway Simulation</div>
+                <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+            </div>
+            <div style="margin-bottom:1.5rem;">
+                <p style="color:var(--text-sub); font-size:0.9rem; margin-bottom:1rem;">Processing payment for Order #<span id="pay-order-id" style="color:#fff; font-weight:700;">-</span></p>
+                <div style="background:#0b0f19; padding:1rem; border-radius:8px; border:1px solid var(--border); margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                        <span style="color:var(--text-sub);">Total Due:</span>
+                        <strong id="pay-amount" style="font-size:1.2rem; color:#34d399;">$0.00</strong>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Select Payment Method</label>
+                    <select id="pay-method" class="form-input">
+                        <option value="CREDIT_CARD">Credit Card (Visa / Mastercard)</option>
+                        <option value="DEBIT_CARD">Debit Card</option>
+                        <option value="UPI">UPI (Instant Verification)</option>
+                        <option value="PAYPAL">PayPal</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Test Card Token / Simulation Account</label>
+                    <input type="text" id="pay-token" class="form-input" value="VALID_VISA_4242" placeholder="VALID_VISA_4242 (or ends in 0000 for decline test)">
+                </div>
+                <button class="btn btn-success" style="width:100%; justify-content:center; margin-top:1rem;" onclick="processOrderPayment()">Confirm &amp; Pay Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SIMULATION RECEIPT MODAL -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">⚡ End-to-End Simulation Receipt</div>
+                <button class="close-btn" onclick="closeReceiptModal()">&times;</button>
+            </div>
+            <div id="receipt-content" style="font-size:0.9rem; line-height:1.6;">
+                <!-- Injected dynamically -->
+            </div>
+            <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:1.5rem;" onclick="closeReceiptModal()">Close Receipt</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div class="toast" id="toast-msg">Notification message</div>
+
     <footer>
         DevOps-Based Continuous Testing Framework &copy; 2026. Enterprise Academic Final Project.
     </footer>
 
     <script>
+        // State variables
+        let authToken = localStorage.getItem("aut_jwt_token") || null;
+        let currentUser = null;
+        let allProducts = [];
+        let cart = []; // Array of { product, quantity }
+        let isRegisterMode = false;
+        let pendingPayOrderId = null;
+
+        // --- HEALTH & STATUS ---
         async function fetchHealth() {
             try {
                 const res = await fetch('/health');
@@ -186,60 +477,518 @@
             }
         }
 
-        async function loadProducts() {
+        // --- AUTHENTICATION ---
+        async function checkCurrentUser() {
+            if (!authToken) {
+                // Auto-login default demo user for seamless examiner experience
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username: 'john_doe', password: 'User@123' })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        authToken = data.token;
+                        currentUser = data.user;
+                        localStorage.setItem("aut_jwt_token", authToken);
+                    }
+                } catch(e) {}
+            }
+
+            if (authToken) {
+                try {
+                    const res = await fetch('/api/auth/me', {
+                        headers: { 'Authorization': `Bearer ${authToken}` }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        currentUser = data.user;
+                        document.getElementById('user-badge').innerText = `👤 ${currentUser.username} (${currentUser.role})`;
+                        return;
+                    }
+                } catch(e) {}
+            }
+            document.getElementById('user-badge').innerText = `👤 Sign In`;
+        }
+
+        function openAuthModal() {
+            if (currentUser) {
+                if (confirm(`Currently signed in as ${currentUser.username}. Do you want to sign out?`)) {
+                    authToken = null;
+                    currentUser = null;
+                    localStorage.removeItem("aut_jwt_token");
+                    document.getElementById('user-badge').innerText = `👤 Sign In`;
+                    showToast("Signed out successfully.");
+                }
+                return;
+            }
+            document.getElementById('auth-modal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('auth-modal').classList.remove('active');
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('email-group').style.display = isRegisterMode ? 'block' : 'none';
+            document.getElementById('auth-title').innerText = isRegisterMode ? 'Create New User Account' : 'Sign In to AUT Microservice';
+            document.getElementById('auth-submit-btn').innerText = isRegisterMode ? 'Register' : 'Sign In';
+            document.getElementById('toggle-auth-btn').innerText = isRegisterMode ? 'Already have an account? Sign In' : "Don't have an account? Register";
+        }
+
+        async function submitAuth() {
+            const username = document.getElementById('auth-username').value.trim();
+            const password = document.getElementById('auth-password').value.trim();
+            const email = document.getElementById('auth-email').value.trim();
+
+            if (!username || !password) {
+                alert("Please enter username and password");
+                return;
+            }
+
+            const endpoint = isRegisterMode ? '/api/auth/register' : '/api/auth/login';
+            const payload = isRegisterMode ? { username, password, email, role: 'customer' } : { username, password };
+
             try {
-                const res = await fetch('/api/products');
-                const data = await res.json();
-                const grid = document.getElementById('product-grid');
-                grid.innerHTML = '';
-                data.products.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'card';
-                    card.innerHTML = `
-                        <div>
-                            <div class="category">${p.category}</div>
-                            <h3>${p.name}</h3>
-                            <div class="desc">${p.description}</div>
-                        </div>
-                        <div class="bottom">
-                            <div>
-                                <div class="price">$${p.price.toFixed(2)}</div>
-                                <div class="stock-tag">In Stock: ${p.stock} units</div>
-                            </div>
-                            <button class="btn" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="orderProduct(${p.id})">Order</button>
-                        </div>
-                    `;
-                    grid.appendChild(card);
+                const res = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
-            } catch (e) {
-                console.error(e);
+                const data = await res.json();
+                if (!res.ok) {
+                    alert(data.error || "Authentication failed");
+                    return;
+                }
+
+                authToken = data.token;
+                currentUser = data.user || { username, role: data.role || 'customer' };
+                localStorage.setItem("aut_jwt_token", authToken);
+                document.getElementById('user-badge').innerText = `👤 ${currentUser.username} (${currentUser.role})`;
+                closeAuthModal();
+                showToast(`Welcome, ${currentUser.username}!`);
+                loadOrders();
+            } catch (err) {
+                alert("Error during authentication: " + err.message);
             }
         }
 
+        // --- PRODUCTS & CATALOG ---
+        async function loadProducts(searchQuery = '', category = '') {
+            try {
+                let url = '/api/products?';
+                if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}&`;
+                if (category) url += `category=${encodeURIComponent(category)}&`;
+
+                const res = await fetch(url);
+                const data = await res.json();
+                allProducts = data.products || [];
+                renderProductGrid(allProducts);
+            } catch (e) {
+                console.error("Failed to load products", e);
+            }
+        }
+
+        function renderProductGrid(products) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            if (products.length === 0) {
+                grid.innerHTML = '<div style="color:var(--text-sub); grid-column:1/-1;">No products found matching criteria.</div>';
+                return;
+            }
+
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div>
+                        <div class="category">${p.category}</div>
+                        <h3>${p.name}</h3>
+                        <div class="desc">${p.description || 'Enterprise microservice module'}</div>
+                    </div>
+                    <div class="bottom">
+                        <div>
+                            <div class="price">$${p.price.toFixed(2)}</div>
+                            <div class="stock-tag ${p.stock <= 0 ? 'stock-out' : ''}">In Stock: ${p.stock} units</div>
+                        </div>
+                        <button class="btn btn-sm btn-primary" onclick="addToCart(${p.id})">🛒 Add to Cart</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.trim();
+            loadProducts(query);
+        }
+
+        function filterCategory(cat) {
+            loadProducts(document.getElementById('search-input').value.trim(), cat);
+        }
+
+        // --- CART & CHECKOUT ---
+        function addToCart(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            if (product.stock <= 0) {
+                alert("This product is currently out of stock!");
+                return;
+            }
+
+            const existing = cart.find(c => c.product.id === productId);
+            if (existing) {
+                if (existing.quantity >= product.stock) {
+                    alert(`Cannot add more than available stock (${product.stock} units)`);
+                    return;
+                }
+                existing.quantity++;
+            } else {
+                cart.push({ product, quantity: 1 });
+            }
+
+            updateCartUI();
+            showToast(`Added "${product.name}" to cart!`);
+        }
+
+        function updateCartUI() {
+            const totalCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').innerText = totalCount;
+            renderCartModal();
+        }
+
+        function renderCartModal() {
+            const list = document.getElementById('cart-items-list');
+            list.innerHTML = '';
+
+            if (cart.length === 0) {
+                list.innerHTML = '<div style="color:var(--text-sub); text-align:center; padding:1.5rem 0;">Your shopping cart is currently empty.</div>';
+                document.getElementById('cart-subtotal').innerText = '$0.00';
+                document.getElementById('cart-discount').innerText = '-$0.00';
+                document.getElementById('cart-total').innerText = '$0.00';
+                return;
+            }
+
+            let subtotal = 0;
+            cart.forEach((item, index) => {
+                const itemTotal = item.product.price * item.quantity;
+                subtotal += itemTotal;
+
+                const div = document.createElement('div');
+                div.style = 'display:flex; justify-content:space-between; align-items:center; padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.05);';
+                div.innerHTML = `
+                    <div style="flex:1;">
+                        <div style="font-weight:600; font-size:0.9rem;">${item.product.name}</div>
+                        <div style="font-size:0.8rem; color:var(--text-sub);">$${item.product.price.toFixed(2)} each</div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.5rem; margin:0 1rem;">
+                        <button class="btn btn-sm btn-secondary" style="padding:0.15rem 0.45rem;" onclick="changeCartQty(${index}, -1)">-</button>
+                        <span style="font-weight:700; min-width:20px; text-align:center;">${item.quantity}</span>
+                        <button class="btn btn-sm btn-secondary" style="padding:0.15rem 0.45rem;" onclick="changeCartQty(${index}, 1)">+</button>
+                    </div>
+                    <div style="font-weight:700; min-width:65px; text-align:right;">
+                        $${itemTotal.toFixed(2)}
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+
+            // Calculate estimated discount
+            let discount = 0;
+            if (subtotal >= 500) discount += subtotal * 0.15;
+            else if (subtotal >= 200) discount += subtotal * 0.05;
+
+            const promo = document.getElementById('cart-promo-code').value.trim().toUpperCase();
+            if (promo === 'DEVOPS20') discount += subtotal * 0.20;
+            else if (promo === 'AUTOMATION10') discount += subtotal * 0.10;
+
+            const discounted = Math.max(0, subtotal - discount);
+            const tax = discounted * 0.08;
+            const total = discounted + tax;
+
+            document.getElementById('cart-subtotal').innerText = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cart-discount').innerText = `-$${discount.toFixed(2)}`;
+            document.getElementById('cart-total').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function changeCartQty(index, change) {
+            cart[index].quantity += change;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            updateCartUI();
+        }
+
+        function openCartModal() {
+            renderCartModal();
+            document.getElementById('cart-modal').classList.add('active');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('active');
+        }
+
+        // --- ORDER CHECKOUT API CALL ---
+        async function submitOrderCheckout() {
+            if (cart.length === 0) {
+                alert("Your cart is empty!");
+                return;
+            }
+
+            if (!authToken) {
+                alert("Please sign in first to place an order.");
+                openAuthModal();
+                return;
+            }
+
+            const itemsPayload = cart.map(i => ({
+                product_id: i.product.id,
+                quantity: i.quantity
+            }));
+            const promo = document.getElementById('cart-promo-code').value.trim();
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ items: itemsPayload, promo_code: promo })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    alert("Order creation failed: " + (data.error || "Unknown error"));
+                    return;
+                }
+
+                closeCartModal();
+                cart = [];
+                updateCartUI();
+                loadProducts(); // refresh stock
+                loadOrders();
+
+                // Open payment modal
+                openPaymentModal(data.order_id, data.summary.total_amount);
+            } catch (err) {
+                alert("Network error creating order: " + err.message);
+            }
+        }
+
+        // --- PAYMENT MODAL & API CALL ---
+        function openPaymentModal(orderId, totalAmount) {
+            pendingPayOrderId = orderId;
+            document.getElementById('pay-order-id').innerText = orderId;
+            document.getElementById('pay-amount').innerText = `$${Number(totalAmount).toFixed(2)}`;
+            document.getElementById('payment-modal').classList.add('active');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.remove('active');
+        }
+
+        async function processOrderPayment() {
+            if (!pendingPayOrderId) return;
+            const method = document.getElementById('pay-method').value;
+            const cardToken = document.getElementById('pay-token').value.trim();
+
+            try {
+                const res = await fetch(`/api/orders/${pendingPayOrderId}/pay`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ payment_method: method, card_token: cardToken })
+                });
+
+                const data = await res.json();
+                if (!res.ok) {
+                    alert("Payment failed: " + (data.reason || data.error || "Declined"));
+                    return;
+                }
+
+                closePaymentModal();
+                showToast(`Payment successful for Order #${pendingPayOrderId}!`);
+                loadOrders();
+
+                // Show receipt
+                openReceiptModal(`
+                    <div style="background:#064e3b; color:#34d399; padding:0.75rem 1rem; border-radius:6px; font-weight:700; margin-bottom:1rem;">
+                        ✔ PAYMENT CONFIRMED &bull; ORDER #${data.order_id}
+                    </div>
+                    <div><strong>Transaction ID:</strong> <code>${data.payment.transaction_id}</code></div>
+                    <div><strong>Amount Paid:</strong> $${data.payment.amount.toFixed(2)}</div>
+                    <div><strong>Payment Method:</strong> ${data.payment.method}</div>
+                    <div><strong>Order Status:</strong> <span class="status-pill status-paid">${data.status}</span></div>
+                    <div><strong>Timestamp:</strong> ${data.payment.timestamp}</div>
+                    <p style="margin-top:1rem; color:var(--text-sub); font-size:0.85rem;">This order has been verified and permanently written to the SQLite database.</p>
+                `);
+            } catch (err) {
+                alert("Payment request error: " + err.message);
+            }
+        }
+
+        // --- ORDERS VIEWER (TAB 2) ---
+        async function loadOrders() {
+            if (!authToken) {
+                document.getElementById('orders-tbody').innerHTML = `
+                    <tr><td colspan="8" style="text-align:center; color:var(--text-sub);">
+                        Please <a href="javascript:openAuthModal()" style="color:var(--primary);">Sign In</a> to view your database order history.
+                    </td></tr>
+                `;
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/orders', {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+                const data = await res.json();
+                const tbody = document.getElementById('orders-tbody');
+                tbody.innerHTML = '';
+
+                const orders = data.orders || [];
+                if (orders.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--text-sub);">No orders found in database yet. Place an order from the catalog!</td></tr>`;
+                    return;
+                }
+
+                orders.forEach(o => {
+                    const tr = document.createElement('tr');
+                    const itemsText = o.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+                    const dateStr = new Date(o.created_at).toLocaleString();
+                    
+                    let statusClass = 'status-pending';
+                    if (o.status === 'PAID') statusClass = 'status-paid';
+                    if (o.status === 'SHIPPED') statusClass = 'status-shipped';
+
+                    const actionBtn = o.status === 'PENDING' 
+                        ? `<button class="btn btn-sm btn-success" onclick="openPaymentModal(${o.id}, ${o.total_amount})">Pay Now</button>`
+                        : `<span style="color:#34d399; font-size:0.8rem;">✔ Settled</span>`;
+
+                    tr.innerHTML = `
+                        <td><strong>#${o.id}</strong></td>
+                        <td style="color:var(--text-sub); font-size:0.8rem;">${dateStr}</td>
+                        <td style="font-size:0.85rem;">${itemsText}</td>
+                        <td>$${o.subtotal.toFixed(2)}</td>
+                        <td style="color:#34d399;">-$${o.discount.toFixed(2)}</td>
+                        <td><strong>$${o.total_amount.toFixed(2)}</strong></td>
+                        <td><span class="status-pill ${statusClass}">${o.status}</span></td>
+                        <td>${actionBtn}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (err) {
+                console.error("Failed to load orders", err);
+            }
+        }
+
+        // --- QUICK CHECKOUT SIMULATION (HERO BUTTON) ---
+        async function runQuickCheckoutSimulation() {
+            showToast("Executing automated end-to-end checkout simulation via REST APIs...");
+
+            try {
+                // Ensure auth
+                if (!authToken) await checkCurrentUser();
+                
+                // 1. Fetch products
+                const prodRes = await fetch('/api/products');
+                const prodData = await prodRes.json();
+                const targetProduct = prodData.products[0];
+
+                // 2. Create order
+                const orderRes = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        items: [{ product_id: targetProduct.id, quantity: 1 }],
+                        promo_code: 'DEVOPS20'
+                    })
+                });
+                const orderData = await orderRes.json();
+
+                // 3. Process payment
+                const payRes = await fetch(`/api/orders/${orderData.order_id}/pay`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ payment_method: 'UPI', card_token: 'SIMULATION_VALID' })
+                });
+                const payData = await payRes.json();
+
+                // 4. Refresh UI
+                loadProducts();
+                loadOrders();
+
+                // 5. Open receipt
+                openReceiptModal(`
+                    <div style="background:#064e3b; color:#34d399; padding:0.75rem 1rem; border-radius:6px; font-weight:700; margin-bottom:1rem;">
+                        ✔ SIMULATION COMPLETE &bull; ORDER #${orderData.order_id} PROCESSED
+                    </div>
+                    <div><strong>Product Ordered:</strong> ${targetProduct.name}</div>
+                    <div><strong>Original Subtotal:</strong> $${orderData.summary.subtotal.toFixed(2)}</div>
+                    <div><strong>DEVOPS20 Discount Applied:</strong> -$${orderData.summary.discount.toFixed(2)}</div>
+                    <div><strong>Total Charged:</strong> $${orderData.summary.total_amount.toFixed(2)}</div>
+                    <div><strong>Payment Method:</strong> UPI</div>
+                    <div><strong>Transaction ID:</strong> <code>${payData.payment.transaction_id}</code></div>
+                    <div><strong>Database Status:</strong> <span class="status-pill status-paid">${payData.status}</span></div>
+                    <p style="margin-top:1rem; color:var(--text-sub); font-size:0.85rem;">All database transactions, inventory deductions, and payment records were executed live on the Flask REST API.</p>
+                `);
+            } catch (err) {
+                alert("Simulation error: " + err.message);
+            }
+        }
+
+        // --- RECEIPT & TOAST UTILS ---
+        function openReceiptModal(html) {
+            document.getElementById('receipt-content').innerHTML = html;
+            document.getElementById('receipt-modal').classList.add('active');
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').classList.remove('active');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-msg');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3500);
+        }
+
+        // --- TABS SWITCHER ---
         async function switchTab(tabId) {
             document.getElementById('catalog-tab').style.display = tabId === 'catalog' ? 'block' : 'none';
+            document.getElementById('orders-tab').style.display = tabId === 'orders' ? 'block' : 'none';
             document.getElementById('api-explorer-tab').style.display = tabId === 'api-explorer' ? 'block' : 'none';
             document.getElementById('live-telemetry-tab').style.display = tabId === 'live-telemetry' ? 'block' : 'none';
 
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
 
-            if (tabId === 'live-telemetry') {
+            if (tabId === 'orders') {
+                loadOrders();
+            } else if (tabId === 'live-telemetry') {
                 const res = await fetch('/metrics');
                 const json = await res.json();
                 document.getElementById('metrics-json').innerText = JSON.stringify(json, null, 2);
             }
         }
 
-        async function testOrderFlow() {
-            alert("Triggering automated test flow via Continuous Testing Dashboard. Open the Dashboard to run comprehensive pipelines!");
-        }
-
-        async function orderProduct(id) {
-            alert(`Product ${id} ordered! Continuous integration tests will automatically verify inventory updates.`);
-        }
-
+        // Initialization
         fetchHealth();
+        checkCurrentUser();
         loadProducts();
         setInterval(fetchHealth, 5000);
     </script>

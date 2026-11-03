@@ -74,6 +74,22 @@ def init_db(db_path=None):
     )
     """)
 
+    cur.execute("""
+    CREATE TABLE IF NOT EXISTS test_records (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pipeline_id TEXT NOT NULL UNIQUE,
+        total_tests INTEGER NOT NULL,
+        passed_tests INTEGER NOT NULL,
+        failed_tests INTEGER NOT NULL,
+        duration_seconds REAL NOT NULL,
+        code_coverage_pct REAL NOT NULL,
+        p95_latency_ms REAL NOT NULL,
+        security_vulnerabilities INTEGER NOT NULL,
+        verdict TEXT NOT NULL,
+        executed_at TEXT NOT NULL
+    )
+    """)
+
     conn.commit()
 
     # Seed initial test data if users table is empty
@@ -110,3 +126,29 @@ def seed_data(conn):
                     (p[0], p[1], p[2], p[3], p[4], now))
 
     conn.commit()
+
+def save_test_record(pipeline_id: str, total_tests: int, passed_tests: int, failed_tests: int,
+                     duration_seconds: float, code_coverage_pct: float, p95_latency_ms: float,
+                     security_vulnerabilities: int, verdict: str, db_path=None) -> int:
+    """Save automated test pipeline run into SQLite test_records table."""
+    conn = get_connection(db_path)
+    cur = conn.cursor()
+    now = datetime.utcnow().isoformat()
+    cur.execute("""
+    INSERT OR REPLACE INTO test_records 
+    (pipeline_id, total_tests, passed_tests, failed_tests, duration_seconds, code_coverage_pct, p95_latency_ms, security_vulnerabilities, verdict, executed_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (pipeline_id, total_tests, passed_tests, failed_tests, duration_seconds, code_coverage_pct, p95_latency_ms, security_vulnerabilities, verdict, now))
+    conn.commit()
+    record_id = cur.lastrowid
+    conn.close()
+    return record_id
+
+def get_test_records(limit: int = 10, db_path=None):
+    """Retrieve recent test pipeline runs from SQLite test_records table."""
+    conn = get_connection(db_path)
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM test_records ORDER BY id DESC LIMIT ?", (limit,))
+    rows = cur.fetchall()
+    conn.close()
+    return [dict(r) for r in rows]

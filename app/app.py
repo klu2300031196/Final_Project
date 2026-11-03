@@ -8,7 +8,7 @@ import time
 import json
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template, send_from_directory
-from app.models import get_connection, init_db, hash_password
+from app.models import get_connection, init_db, hash_password, save_test_record, get_test_records
 from app.auth import generate_token, authenticate_user, login_required
 from app.services import PricingService, OrderStateMachine, PaymentSimulator
 
@@ -172,6 +172,49 @@ def create_app(db_path=None):
                 "role": user["role"]
             }
         }), 200
+
+    @app.route("/api/auth/me", methods=["GET"])
+    @login_required()
+    def get_current_user():
+        conn = get_db()
+        cur = conn.cursor()
+        cur.execute("SELECT id, username, email, role, created_at FROM users WHERE id = ?", (request.current_user["sub"],))
+        user = cur.fetchone()
+        conn.close()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify({"user": dict(user)}), 200
+
+    # -------------------- CONTINUOUS TESTING RECORDS ENDPOINTS -------------------- #
+    @app.route("/api/test-records", methods=["GET"])
+    def get_records():
+        limit = request.args.get("limit", 10, type=int)
+        records = get_test_records(limit=limit, db_path=app.config["DB_PATH"])
+        return jsonify({"count": len(records), "records": records}), 200
+
+    @app.route("/api/test-records", methods=["POST"])
+    def add_record():
+        data = request.get_json(silent=True) or {}
+        pipeline_id = data.get("pipeline_id")
+        if not pipeline_id:
+            return jsonify({"error": "pipeline_id is required"}), 400
+
+        try:
+            rec_id = save_test_record(
+                pipeline_id=pipeline_id,
+                total_tests=int(data.get("total_tests", 0)),
+                passed_tests=int(data.get("passed_tests", 0)),
+                failed_tests=int(data.get("failed_tests", 0)),
+                duration_seconds=float(data.get("duration_seconds", 0.0)),
+                code_coverage_pct=float(data.get("code_coverage_pct", 0.0)),
+                p95_latency_ms=float(data.get("p95_latency_ms", 0.0)),
+                security_vulnerabilities=int(data.get("security_vulnerabilities", 0)),
+                verdict=data.get("verdict", "PASSED"),
+                db_path=app.config["DB_PATH"]
+            )
+            return jsonify({"message": "Test record saved", "id": rec_id, "pipeline_id": pipeline_id}), 201
+        except Exception as e:
+            return jsonify({"error": "Failed to save test record", "detail": str(e)}), 500
 
     # -------------------- PRODUCTS CATALOG ENDPOINTS -------------------- #
     @app.route("/api/products", methods=["GET"])

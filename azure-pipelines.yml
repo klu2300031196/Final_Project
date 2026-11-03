@@ -1,0 +1,124 @@
+# Azure DevOps CI/CD Pipeline for Continuous Testing Framework
+trigger:
+  branches:
+    include:
+      - main
+      - master
+      - develop
+
+pr:
+  branches:
+    include:
+      - main
+      - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  PYTHON_VERSION: '3.10'
+
+stages:
+  # ---------------- STAGE 1: SAST & SECURITY AUDIT ---------------- #
+  - stage: Security_SAST_Audit
+    displayName: '🛡️ SAST & Security Audit'
+    jobs:
+      - job: SecurityScan
+        displayName: 'Scan Codebase for Secrets & Vulnerabilities'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(PYTHON_VERSION)
+            displayName: 'Set Python Version'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt || true
+            displayName: 'Install Dependencies'
+
+          - script: |
+              python -m tests.security.security_scanner
+            displayName: 'Run AST Security Scanner'
+
+  # ---------------- STAGE 2: CONTINUOUS TEST MATRIX ---------------- #
+  - stage: Continuous_Test_Matrix
+    displayName: '🧪 Automated Testing & Regression'
+    dependsOn: Security_SAST_Audit
+    jobs:
+      - job: RunPyTest
+        displayName: 'Execute PyTest Suites (Unit, Integration, E2E)'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(PYTHON_VERSION)
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt || true
+            displayName: 'Install Dependencies'
+
+          - script: |
+              python -m pytest tests/unit tests/integration tests/e2e -v --junitxml=$(Build.ArtifactStagingDirectory)/junit_report.xml
+            displayName: 'Run PyTest Suites'
+
+          - task: PublishTestResults@2
+            condition: always()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '$(Build.ArtifactStagingDirectory)/junit_report.xml'
+              testRunTitle: 'DevOps Continuous Testing Suite'
+            displayName: 'Publish JUnit Test Results'
+
+  # ---------------- STAGE 3: CODE COVERAGE & PERFORMANCE ---------------- #
+  - stage: Coverage_and_Performance
+    displayName: '📊 Coverage & Performance SLAs'
+    dependsOn: Continuous_Test_Matrix
+    jobs:
+      - job: CoverageAndPerf
+        displayName: 'Analyze AST Coverage & Concurrent Latency SLAs'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(PYTHON_VERSION)
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt || true
+            displayName: 'Install Dependencies'
+
+          - script: |
+              python -m engine.coverage_analyzer
+            displayName: 'Verify Code Coverage Threshold (>= 75%)'
+
+          - script: |
+              python -m tests.performance.load_engine
+            displayName: 'Verify Concurrent P95 Latency SLA'
+
+  # ---------------- STAGE 4: QUALITY GATE & ARTIFACTS ---------------- #
+  - stage: Quality_Gate_Enforcement
+    displayName: '🚦 DevOps Quality Gate Decision'
+    dependsOn: Coverage_and_Performance
+    jobs:
+      - job: EvaluateGate
+        displayName: 'Enforce Quality Gate Policies'
+        steps:
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: $(PYTHON_VERSION)
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt || true
+            displayName: 'Install Dependencies'
+
+          - script: |
+              python -m engine.test_runner
+            displayName: 'Execute Quality Gate Evaluator'
+
+          - task: PublishPipelineArtifact@1
+            condition: always()
+            inputs:
+              targetPath: 'reports'
+              artifact: 'DevOps_Quality_Gate_Reports'
+              publishLocation: 'pipeline'
+            displayName: 'Publish Executive HTML & JSON Artifacts'

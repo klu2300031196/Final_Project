@@ -14,6 +14,7 @@ from flask import Flask, jsonify, request, Response, render_template, send_from_
 import requests
 
 from engine.test_runner import ContinuousTestingRunner
+from app.models import get_test_records, init_db
 
 app = Flask(
     __name__,
@@ -87,7 +88,24 @@ def get_latest_report():
 
 @app.route("/api/history")
 def get_history():
-    return jsonify({"runs": list(reversed(RUN_HISTORY))})
+    try:
+        records = get_test_records(limit=20)
+        formatted_runs = []
+        for r in records:
+            formatted_runs.append({
+                "id": r["pipeline_id"],
+                "timestamp": r["executed_at"],
+                "duration": r["duration_seconds"],
+                "verdict": r["verdict"],
+                "tests": r["total_tests"],
+                "passed": r["passed_tests"],
+                "failed": r["failed_tests"],
+                "coverage": r["code_coverage_pct"],
+                "latency_p95": r["p95_latency_ms"]
+            })
+        return jsonify({"runs": formatted_runs})
+    except Exception:
+        return jsonify({"runs": list(reversed(RUN_HISTORY))})
 
 @app.route("/api/pipeline/trigger", methods=["POST"])
 def trigger_pipeline():

@@ -1,6 +1,6 @@
 {
-  "pipeline_id": "CT-RUN-1793725065",
-  "timestamp": "2026-11-03T16:57:45.198209",
+  "pipeline_id": "CT-RUN-1793727214",
+  "timestamp": "2026-11-03T17:33:34.973611",
   "status": "PASSED",
   "stages": {
     "security_sast": {
@@ -13,23 +13,23 @@
       "findings": []
     },
     "functional_tests": {
-      "total": 53,
-      "passed": 53,
+      "total": 56,
+      "passed": 56,
       "failed": 0,
       "exit_code": 0
     },
     "code_coverage": {
-      "total_statements": 552,
-      "covered_statements": 427,
-      "missed_statements": 125,
-      "overall_coverage_pct": 77.4,
+      "total_statements": 611,
+      "covered_statements": 476,
+      "missed_statements": 135,
+      "overall_coverage_pct": 77.9,
       "modules": [
         {
           "module": "app/app.py",
-          "total_statements": 343,
-          "covered_statements": 292,
-          "missed_statements": 51,
-          "coverage_pct": 85.1
+          "total_statements": 380,
+          "covered_statements": 325,
+          "missed_statements": 55,
+          "coverage_pct": 85.5
         },
         {
           "module": "app/auth.py",
@@ -40,10 +40,10 @@
         },
         {
           "module": "app/models.py",
-          "total_statements": 49,
-          "covered_statements": 31,
-          "missed_statements": 18,
-          "coverage_pct": 63.3
+          "total_statements": 71,
+          "covered_statements": 47,
+          "missed_statements": 24,
+          "coverage_pct": 66.2
         },
         {
           "module": "app/services.py",
@@ -60,21 +60,21 @@
       "successful_requests": 80,
       "failed_requests": 0,
       "error_rate_pct": 0.0,
-      "duration_seconds": 0.087,
-      "requests_per_second": 916.59,
-      "min_latency_ms": 0.29,
-      "max_latency_ms": 36.64,
-      "mean_latency_ms": 4.31,
-      "p50_latency_ms": 2.65,
-      "p90_latency_ms": 7.91,
-      "p95_latency_ms": 11.38,
-      "p99_latency_ms": 34.68,
+      "duration_seconds": 0.061,
+      "requests_per_second": 1308.92,
+      "min_latency_ms": 0.26,
+      "max_latency_ms": 41.15,
+      "mean_latency_ms": 3.3,
+      "p50_latency_ms": 1.94,
+      "p90_latency_ms": 4.96,
+      "p95_latency_ms": 10.05,
+      "p99_latency_ms": 26.58,
       "sla_passed": true,
       "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
     }
   },
-  "duration_seconds": 6.28,
-  "total_tests": 53,
+  "duration_seconds": 4.86,
+  "total_tests": 56,
   "quality_gate": {
     "verdict": "PASSED",
     "can_deploy": true,
@@ -91,7 +91,7 @@
       {
         "rule": "Application Source Code Coverage",
         "threshold": ">= 75.0%",
-        "actual": "77.4%",
+        "actual": "77.9%",
         "status": "PASSED"
       },
       {
@@ -103,7 +103,7 @@
       {
         "rule": "API P95 Response Latency SLA",
         "threshold": "<= 350.0ms",
-        "actual": "11.38ms",
+        "actual": "10.05ms",
         "status": "PASSED"
       },
       {
@@ -117,17 +117,17 @@
     "recommendation": "Software satisfies all DevOps Continuous Testing standards. Build approved for deployment."
   },
   "coverage": {
-    "total_statements": 552,
-    "covered_statements": 427,
-    "missed_statements": 125,
-    "overall_coverage_pct": 77.4,
+    "total_statements": 611,
+    "covered_statements": 476,
+    "missed_statements": 135,
+    "overall_coverage_pct": 77.9,
     "modules": [
       {
         "module": "app/app.py",
-        "total_statements": 343,
-        "covered_statements": 292,
-        "missed_statements": 51,
-        "coverage_pct": 85.1
+        "total_statements": 380,
+        "covered_statements": 325,
+        "missed_statements": 55,
+        "coverage_pct": 85.5
       },
       {
         "module": "app/auth.py",
@@ -138,10 +138,10 @@
       },
       {
         "module": "app/models.py",
-        "total_statements": 49,
-        "covered_statements": 31,
-        "missed_statements": 18,
-        "coverage_pct": 63.3
+        "total_statements": 71,
+        "covered_statements": 47,
+        "missed_statements": 24,
+        "coverage_pct": 66.2
       },
       {
         "module": "app/services.py",
@@ -158,15 +158,15 @@
     "successful_requests": 80,
     "failed_requests": 0,
     "error_rate_pct": 0.0,
-    "duration_seconds": 0.087,
-    "requests_per_second": 916.59,
-    "min_latency_ms": 0.29,
-    "max_latency_ms": 36.64,
-    "mean_latency_ms": 4.31,
-    "p50_latency_ms": 2.65,
-    "p90_latency_ms": 7.91,
-    "p95_latency_ms": 11.38,
-    "p99_latency_ms": 34.68,
+    "duration_seconds": 0.061,
+    "requests_per_second": 1308.92,
+    "min_latency_ms": 0.26,
+    "max_latency_ms": 41.15,
+    "mean_latency_ms": 3.3,
+    "p50_latency_ms": 1.94,
+    "p90_latency_ms": 4.96,
+    "p95_latency_ms": 10.05,
+    "p99_latency_ms": 26.58,
     "sla_passed": true,
     "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
   },

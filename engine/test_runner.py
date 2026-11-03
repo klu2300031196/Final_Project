@@ -154,6 +154,24 @@ class ContinuousTestingRunner:
         pipeline_result["security"] = sast_report
         pipeline_result["status"] = qg_verdict["verdict"]
 
+        # Persist test record into SQLite database
+        try:
+            from app.models import save_test_record
+            save_test_record(
+                pipeline_id=pipeline_result["pipeline_id"],
+                total_tests=total_functional_tests,
+                passed_tests=plugin.passed,
+                failed_tests=plugin.failed,
+                duration_seconds=total_duration,
+                code_coverage_pct=cov_report["overall_coverage_pct"],
+                p95_latency_ms=perf_report["p95_latency_ms"],
+                security_vulnerabilities=sast_report["critical_or_high"],
+                verdict=qg_verdict["verdict"]
+            )
+            self.log("   -> Persisted test execution record into SQLite test_records database")
+        except Exception as db_err:
+            self.log(f"   -> [WARN] Could not persist record to database: {db_err}")
+
         # ---------------- ARTIFACT GENERATION ---------------- #
         self.log("\n[ARTIFACTS] Generating CI/CD Test Artifacts & Executive Reports...")
         json_path = self.report_gen.save_json_report(pipeline_result)
