@@ -28,8 +28,14 @@ def start_dashboard():
     run_simple("0.0.0.0", 8080, dashboard_app, threaded=True, use_reloader=False)
 
 def main():
+    if hasattr(sys.stdout, "reconfigure"):
+        try:
+            sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
     print("=" * 70)
-    print(" ⚡ DEVOPS CONTINUOUS TESTING FRAMEWORK - PLATFORM LAUNCHER ⚡")
+    print(" [*] DEVOPS CONTINUOUS TESTING FRAMEWORK - PLATFORM LAUNCHER [*]")
     print("=" * 70)
     print(" [*] Target Application Under Test (AUT) : http://localhost:5000")
     print(" [*] Continuous Testing Web Dashboard    : http://localhost:8080")
