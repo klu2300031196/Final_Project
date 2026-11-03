@@ -146,9 +146,8 @@ class LoadTestEngine:
 
 if __name__ == "__main__":
     app = create_app()
-    with app.test_client() as client:
-        engine = LoadTestEngine(client=client)
-        print("Running DevOps Continuous Performance Benchmark (100 requests, 10 concurrent users)...")
-        stats = engine.run_benchmark(total_requests=100, concurrency=10)
-        import json
-        print(json.dumps(stats, indent=2))
+    engine = LoadTestEngine(app=app)
+    print("Running DevOps Continuous Performance Benchmark (100 requests, 10 concurrent users)...")
+    stats = engine.run_benchmark(total_requests=100, concurrency=10)
+    import json
+    print(json.dumps(stats, indent=2))

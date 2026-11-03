@@ -187,12 +187,14 @@ def create_app(db_path=None):
 
     # -------------------- CONTINUOUS TESTING RECORDS ENDPOINTS -------------------- #
     @app.route("/api/test-records", methods=["GET"])
+    @login_required()
     def get_records():
         limit = request.args.get("limit", 10, type=int)
         records = get_test_records(limit=limit, db_path=app.config["DB_PATH"])
         return jsonify({"count": len(records), "records": records}), 200
 
     @app.route("/api/test-records", methods=["POST"])
+    @login_required()
     def add_record():
         data = request.get_json(silent=True) or {}
         pipeline_id = data.get("pipeline_id")
