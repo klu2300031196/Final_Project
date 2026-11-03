@@ -1,0 +1,49 @@
+image: python:3.10-slim
+
+stages:
+  - security
+  - test
+  - performance
+  - quality-gate
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - python --version
+  - pip install -r requirements.txt || true
+
+stage:security:
+  stage: security
+  script:
+    - python -m tests.security.security_scanner
+
+stage:testing:
+  stage: test
+  script:
+    - python -m pytest tests/unit tests/integration tests/e2e -v --junitxml=reports/junit_report.xml
+    - python -m engine.coverage_analyzer
+  artifacts:
+    when: always
+    reports:
+      junit: reports/junit_report.xml
+    paths:
+      - reports/
+
+stage:performance:
+  stage: performance
+  script:
+    - python -m tests.performance.load_engine
+
+stage:quality-gate:
+  stage: quality-gate
+  script:
+    - python -m engine.test_runner
+  artifacts:
+    when: always
+    paths:
+      - reports/

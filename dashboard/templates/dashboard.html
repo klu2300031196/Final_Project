@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Continuous Testing Hub & Pipeline Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- TOP NAVIGATION BAR -->
+        <header class="top-nav">
+            <div class="brand">
+                <div class="brand-icon">⚡</div>
+                <div>
+                    <div class="brand-title">DevTestOps Hub</div>
+                    <div class="brand-subtitle">Continuous Testing & Quality Gate Platform</div>
+                </div>
+            </div>
+
+            <div class="nav-controls">
+                <div class="status-indicator">
+                    <span class="status-dot dot-online"></span>
+                    <span class="status-label" id="aut-status-text">AUT: ONLINE</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot dot-idle" id="runner-dot"></span>
+                    <span class="status-label" id="runner-status-text">RUNNER: IDLE</span>
+                </div>
+                <a href="http://localhost:5000" target="_blank" class="nav-btn btn-secondary">
+                    <span>Target AUT Web Store</span> ↗
+                </a>
+                <button class="nav-btn btn-primary" id="btn-trigger" onclick="triggerPipeline()">
+                    <span class="play-icon">▶</span> Run Full Testing Pipeline
+                </button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTAINER -->
+        <main class="main-content">
+            
+            <!-- STAGE PROGRESS STEPPER -->
+            <section class="pipeline-stepper-card">
+                <div class="stepper-header">
+                    <h3>Continuous Testing Pipeline Architecture (5-Stage Gate)</h3>
+                    <span class="verdict-tag tag-passed" id="global-verdict">GATE: PASSED</span>
+                </div>
+                <div class="stages-flow">
+                    <div class="stage-step" id="step-sast">
+                        <div class="step-num">1</div>
+                        <div class="step-info">
+                            <div class="step-name">SAST Security</div>
+                            <div class="step-status">Code & Secrets Audit</div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="stage-step" id="step-tests">
+                        <div class="step-num">2</div>
+                        <div class="step-info">
+                            <div class="step-name">PyTest Suites</div>
+                            <div class="step-status">Unit, Integration, E2E</div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="stage-step" id="step-cov">
+                        <div class="step-num">3</div>
+                        <div class="step-info">
+                            <div class="step-name">Code Coverage</div>
+                            <div class="step-status">AST Line Tracking</div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="stage-step" id="step-perf">
+                        <div class="step-num">4</div>
+                        <div class="step-info">
+                            <div class="step-name">Performance SLAs</div>
+                            <div class="step-status">Concurrent Latency P95</div>
+                        </div>
+                    </div>
+                    <div class="step-connector"></div>
+                    <div class="stage-step" id="step-gate">
+                        <div class="step-num">5</div>
+                        <div class="step-info">
+                            <div class="step-name">Quality Gate</div>
+                            <div class="step-status">Deploy/Block Decision</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- KPI METRIC CARDS -->
+            <section class="kpi-row">
+                <div class="kpi-card">
+                    <div class="kpi-label">TOTAL TEST CASES</div>
+                    <div class="kpi-value" id="kpi-tests">53 / 53</div>
+                    <div class="kpi-subtext color-green">100% Pass Rate (0 Failures)</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">OVERALL CODE COVERAGE</div>
+                    <div class="kpi-value color-emerald" id="kpi-coverage">77.4%</div>
+                    <div class="kpi-subtext">Quality Gate Target: &gt;= 75%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">P95 RESPONSE LATENCY</div>
+                    <div class="kpi-value color-purple" id="kpi-latency">11.4 ms</div>
+                    <div class="kpi-subtext" id="kpi-rps">Throughput: ~916 RPS</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">SECURITY VULNERABILITIES</div>
+                    <div class="kpi-value color-green" id="kpi-security">0 HIGH</div>
+                    <div class="kpi-subtext">SAST AST &amp; SQLi Resilience: Passed</div>
+                </div>
+            </section>
+
+            <!-- SPLIT SECTION: CHARTS + TERMINAL -->
+            <div class="grid-2col">
+                <!-- LEFT COLUMN: CHARTS & VISUALS -->
+                <div class="dashboard-col">
+                    <!-- QUALITY GATE SCORECARD -->
+                    <div class="content-card">
+                        <div class="card-title-row">
+                            <h3>DevOps Quality Gate Scorecard</h3>
+                            <div class="action-links">
+                                <a href="/reports/executive_dashboard.html" target="_blank" class="chip-link">Executive Report ↗</a>
+                                <a href="/reports/junit_report.xml" target="_blank" class="chip-link">JUnit XML ↗</a>
+                                <a href="/reports/test_report.json" target="_blank" class="chip-link">JSON ↗</a>
+                            </div>
+                        </div>
+                        <table class="data-table" id="gate-rules-table">
+                            <thead>
+                                <tr><th>Policy Rule</th><th>Threshold</th><th>Actual</th><th>Status</th></tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- MODULE COVERAGE -->
+                    <div class="content-card">
+                        <div class="card-title-row">
+                            <h3>Application Microservice Code Coverage</h3>
+                            <span class="sub-badge" id="cov-summary-badge">4 Modules Analyzed</span>
+                        </div>
+                        <div id="coverage-progress-container" class="coverage-bars-list">
+                            <!-- Injected dynamically by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT COLUMN: LIVE CONSOLE LOGS & RUN HISTORY -->
+                <div class="dashboard-col">
+                    <!-- LIVE STREAMING TERMINAL CONSOLE -->
+                    <div class="content-card terminal-card">
+                        <div class="terminal-header">
+                            <div class="terminal-dots">
+                                <span class="t-dot t-red"></span>
+                                <span class="t-dot t-yellow"></span>
+                                <span class="t-dot t-green"></span>
+                            </div>
+                            <div class="terminal-title">Live Pipeline Execution Console (SSE Stream)</div>
+                            <button class="t-clear-btn" onclick="clearConsole()">Clear</button>
+                        </div>
+                        <div class="terminal-body" id="console-output">
+                            <div class="terminal-line">[SYSTEM] Ready. Click 'Run Full Testing Pipeline' to start continuous testing suite.</div>
+                        </div>
+                    </div>
+
+                    <!-- EXECUTION HISTORY -->
+                    <div class="content-card">
+                        <div class="card-title-row">
+                            <h3>Continuous Testing Run History</h3>
+                            <span class="sub-badge">Automated CI/CD Records</span>
+                        </div>
+                        <table class="data-table" id="history-table">
+                            <thead>
+                                <tr><th>Run ID</th><th>Timestamp</th><th>Duration</th><th>Verdict</th></tr>
+                            </thead>
+                            <tbody>
+                                <!-- Injected dynamically by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <footer class="bottom-footer">
+            <div>DevOps-Based Continuous Testing Framework &bull; Academic &amp; Enterprise Project 2026</div>
+            <div style="color:var(--text-dim);">Integrated with GitHub Actions, Jenkins, PyTest, Locust, and Bandit</div>
+        </footer>
+    </div>
+
+    <script src="/static/dashboard.js"></script>
+</body>
+</html>

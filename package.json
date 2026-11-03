@@ -1,0 +1,27 @@
+{
+  "name": "devops-continuous-testing-framework",
+  "version": "1.0.0",
+  "description": "Enterprise-grade DevOps Continuous Testing Framework with Quality Gates, SAST, Multi-Layer PyTest, Performance SLAs, and Web Hub",
+  "main": "dashboard/server.py",
+  "scripts": {
+    "start": "python scripts/start_devops_platform.py",
+    "test": "python -m engine.test_runner",
+    "test:unit": "pytest tests/unit -v",
+    "test:integration": "pytest tests/integration -v",
+    "test:security": "python -m tests.security.security_scanner",
+    "test:perf": "python -m tests.performance.load_engine",
+    "coverage": "python -m engine.coverage_analyzer"
+  },
+  "keywords": [
+    "devops",
+    "continuous-testing",
+    "ci-cd",
+    "quality-gate",
+    "sast",
+    "performance-testing",
+    "pytest",
+    "automation"
+  ],
+  "author": "Final Project Academic Team",
+  "license": "MIT"
+}

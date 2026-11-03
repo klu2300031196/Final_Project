@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevOps Target Application (AUT) - E-Commerce & Cloud Services</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0f19;
+            --surface: #131c2e;
+            --border: #23334d;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #10b981;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --danger: #ef4444;
+            --card-bg: #18243b;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 0.5rem; }
+        .logo-badge { background: var(--primary); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase; }
+        .nav-status { display: flex; align-items: center; gap: 1.5rem; }
+        .badge { padding: 0.3rem 0.7rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
+        
+        main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; width: 100%; flex: 1; }
+        .hero {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7) 0%, rgba(15, 23, 42, 0.9) 100%);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .hero h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        .hero p { color: var(--text-sub); font-size: 0.95rem; max-width: 650px; }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: var(--primary-hover); }
+        .btn-success { background: var(--accent); }
+        .btn-success:hover { background: #059669; }
+
+        .tabs { display: flex; gap: 1rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; }
+        .tab { padding: 0.75rem 1rem; cursor: pointer; color: var(--text-sub); border-bottom: 2px solid transparent; font-weight: 600; }
+        .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; }
+        .card .category { font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; }
+        .card .desc { color: var(--text-sub); font-size: 0.85rem; margin-bottom: 1rem; flex: 1; }
+        .card .bottom { display: flex; justify-content: space-between; align-items: center; }
+        .card .price { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .stock-tag { font-size: 0.75rem; color: #34d399; }
+
+        .api-docs-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+        th, td { padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--text-sub); text-transform: uppercase; font-size: 0.75rem; }
+        .method { font-weight: 700; padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.75rem; }
+        .method-get { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .method-post { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        .method-patch { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .method-delete { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+
+        footer { text-align: center; padding: 1.5rem; border-top: 1px solid var(--border); color: var(--text-sub); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <span>⚡ DevTestOps</span>
+            <span class="logo-badge">AUT Live Target</span>
+        </div>
+        <div class="nav-status">
+            <span class="badge badge-green" id="health-badge">● Health: UP</span>
+            <span class="badge badge-blue" id="uptime-badge">Uptime: 0s</span>
+            <a href="http://localhost:8080" target="_blank" class="btn btn-success" style="font-size:0.85rem;">Open Testing Dashboard 🚀</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="hero">
+            <div>
+                <h1>DevOps Target Service (Application Under Test)</h1>
+                <p>This is the real-time application under test for our DevOps-based Continuous Testing Framework. It processes user auth, catalog requests, complex pricing, state transitions, and simulated payment gateways.</p>
+            </div>
+            <div>
+                <button class="btn" onclick="testOrderFlow()">Run Quick Checkout Simulation</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('catalog')">Product Catalog</div>
+            <div class="tab" onclick="switchTab('api-explorer')">API Endpoints</div>
+            <div class="tab" onclick="switchTab('live-telemetry')">Live Metrics</div>
+        </div>
+
+        <section id="catalog-tab">
+            <div class="grid" id="product-grid">
+                <div style="color:var(--text-sub);">Loading products from AUT REST API...</div>
+            </div>
+        </section>
+
+        <section id="api-explorer-tab" style="display:none;">
+            <div class="api-docs-box">
+                <h2>Application REST Endpoints Under Continuous Testing</h2>
+                <table>
+                    <thead>
+                        <tr><th>Method</th><th>Endpoint</th><th>Description</th><th>Test Coverage Layer</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td><span class="method method-get">GET</span></td><td><code>/health</code></td><td>Microservice & DB health check</td><td>Unit & Integration</td></tr>
+                        <tr><td><span class="method method-get">GET</span></td><td><code>/metrics</code></td><td>Latency & Status telemetry</td><td>Performance & Load</td></tr>
+                        <tr><td><span class="method method-post">POST</span></td><td><code>/api/auth/register</code></td><td>User registration with password hashing</td><td>Integration & Security</td></tr>
+                        <tr><td><span class="method method-post">POST</span></td><td><code>/api/auth/login</code></td><td>JWT Bearer token issue</td><td>Security & SAST</td></tr>
+                        <tr><td><span class="method method-get">GET</span></td><td><code>/api/products</code></td><td>Product catalog with search/filter</td><td>Integration & E2E</td></tr>
+                        <tr><td><span class="method method-post">POST</span></td><td><code>/api/orders</code></td><td>Order checkout with promo & inventory rules</td><td>Unit & Integration</td></tr>
+                        <tr><td><span class="method method-post">POST</span></td><td><code>/api/orders/{id}/pay</code></td><td>Payment processing & state transition</td><td>Integration & Performance</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="live-telemetry-tab" style="display:none;">
+            <div class="api-docs-box">
+                <h2>DevOps Live Telemetry Metrics</h2>
+                <div style="margin-top: 1rem; font-family: monospace; background: #000; padding: 1rem; border-radius: 6px;" id="metrics-json">
+                    Loading metrics...
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        DevOps-Based Continuous Testing Framework &copy; 2026. Enterprise Academic Final Project.
+    </footer>
+
+    <script>
+        async function fetchHealth() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                document.getElementById('health-badge').innerText = `● Health: ${data.status} (DB: ${data.database})`;
+                document.getElementById('uptime-badge').innerText = `Uptime: ${data.uptime_seconds}s`;
+            } catch (e) {
+                document.getElementById('health-badge').innerText = `● Health: DOWN`;
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch('/api/products');
+                const data = await res.json();
+                const grid = document.getElementById('product-grid');
+                grid.innerHTML = '';
+                data.products.forEach(p => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    card.innerHTML = `
+                        <div>
+                            <div class="category">${p.category}</div>
+                            <h3>${p.name}</h3>
+                            <div class="desc">${p.description}</div>
+                        </div>
+                        <div class="bottom">
+                            <div>
+                                <div class="price">$${p.price.toFixed(2)}</div>
+                                <div class="stock-tag">In Stock: ${p.stock} units</div>
+                            </div>
+                            <button class="btn" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="orderProduct(${p.id})">Order</button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function switchTab(tabId) {
+            document.getElementById('catalog-tab').style.display = tabId === 'catalog' ? 'block' : 'none';
+            document.getElementById('api-explorer-tab').style.display = tabId === 'api-explorer' ? 'block' : 'none';
+            document.getElementById('live-telemetry-tab').style.display = tabId === 'live-telemetry' ? 'block' : 'none';
+
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tabId === 'live-telemetry') {
+                const res = await fetch('/metrics');
+                const json = await res.json();
+                document.getElementById('metrics-json').innerText = JSON.stringify(json, null, 2);
+            }
+        }
+
+        async function testOrderFlow() {
+            alert("Triggering automated test flow via Continuous Testing Dashboard. Open the Dashboard to run comprehensive pipelines!");
+        }
+
+        async function orderProduct(id) {
+            alert(`Product ${id} ordered! Continuous integration tests will automatically verify inventory updates.`);
+        }
+
+        fetchHealth();
+        loadProducts();
+        setInterval(fetchHealth, 5000);
+    </script>
+</body>
+</html>

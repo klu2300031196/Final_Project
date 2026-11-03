@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  aut-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.app
+    container_name: devops_target_aut
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - AUT_DB_FILE=/app/data/aut_database.sqlite
+    volumes:
+      - aut-data:/app/data
+    restart: unless-stopped
+    networks:
+      - devops-test-net
+
+  testing-dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: devops_continuous_testing_hub
+    ports:
+      - "8080:8080"
+    depends_on:
+      - aut-service
+    volumes:
+      - ./reports:/app/reports
+    restart: unless-stopped
+    networks:
+      - devops-test-net
+
+volumes:
+  aut-data:
+
+networks:
+  devops-test-net:
+    driver: bridge

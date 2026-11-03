@@ -1,0 +1,23 @@
+# Dockerfile for DevOps Continuous Testing Dashboard & Engine Hub
+FROM python:3.10-slim
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# Copy application, engine, tests, and dashboard
+COPY app/ /app/app/
+COPY tests/ /app/tests/
+COPY engine/ /app/engine/
+COPY dashboard/ /app/dashboard/
+COPY requirements.txt /app/
+
+# Create reports directory
+RUN mkdir -p /app/reports
+
+RUN pip install --no-cache-dir -r requirements.txt || true
+
+EXPOSE 8080
+
+CMD ["python", "dashboard/server.py"]

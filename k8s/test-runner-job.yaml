@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: devops-continuous-testing-runner
+spec:
+  template:
+    metadata:
+      name: test-runner
+    spec:
+      containers:
+      - name: test-executor
+        image: devops-test-hub:latest
+        command: ["python", "-m", "engine.test_runner"]
+        env:
+        - name: TARGET_AUT_URL
+          value: "http://devops-aut-service:5000"
+      restartPolicy: Never
+  backoffLimit: 2

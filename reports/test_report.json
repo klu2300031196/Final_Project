@@ -1,0 +1,182 @@
+{
+  "pipeline_id": "CT-RUN-1793725065",
+  "timestamp": "2026-11-03T16:57:45.198209",
+  "status": "PASSED",
+  "stages": {
+    "security_sast": {
+      "files_scanned": 5,
+      "total_findings": 0,
+      "critical_or_high": 0,
+      "medium": 0,
+      "low": 0,
+      "passed": true,
+      "findings": []
+    },
+    "functional_tests": {
+      "total": 53,
+      "passed": 53,
+      "failed": 0,
+      "exit_code": 0
+    },
+    "code_coverage": {
+      "total_statements": 552,
+      "covered_statements": 427,
+      "missed_statements": 125,
+      "overall_coverage_pct": 77.4,
+      "modules": [
+        {
+          "module": "app/app.py",
+          "total_statements": 343,
+          "covered_statements": 292,
+          "missed_statements": 51,
+          "coverage_pct": 85.1
+        },
+        {
+          "module": "app/auth.py",
+          "total_statements": 73,
+          "covered_statements": 52,
+          "missed_statements": 21,
+          "coverage_pct": 71.2
+        },
+        {
+          "module": "app/models.py",
+          "total_statements": 49,
+          "covered_statements": 31,
+          "missed_statements": 18,
+          "coverage_pct": 63.3
+        },
+        {
+          "module": "app/services.py",
+          "total_statements": 87,
+          "covered_statements": 52,
+          "missed_statements": 35,
+          "coverage_pct": 59.8
+        }
+      ]
+    },
+    "performance": {
+      "total_requests": 80,
+      "concurrency": 6,
+      "successful_requests": 80,
+      "failed_requests": 0,
+      "error_rate_pct": 0.0,
+      "duration_seconds": 0.087,
+      "requests_per_second": 916.59,
+      "min_latency_ms": 0.29,
+      "max_latency_ms": 36.64,
+      "mean_latency_ms": 4.31,
+      "p50_latency_ms": 2.65,
+      "p90_latency_ms": 7.91,
+      "p95_latency_ms": 11.38,
+      "p99_latency_ms": 34.68,
+      "sla_passed": true,
+      "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
+    }
+  },
+  "duration_seconds": 6.28,
+  "total_tests": 53,
+  "quality_gate": {
+    "verdict": "PASSED",
+    "can_deploy": true,
+    "checks_count": 5,
+    "passed_checks": 5,
+    "failed_checks": 0,
+    "checks": [
+      {
+        "rule": "Automated Test Suite Pass Rate",
+        "threshold": ">= 100.0% (0 failures)",
+        "actual": "100.0% (0 failed)",
+        "status": "PASSED"
+      },
+      {
+        "rule": "Application Source Code Coverage",
+        "threshold": ">= 75.0%",
+        "actual": "77.4%",
+        "status": "PASSED"
+      },
+      {
+        "rule": "Security SAST/DAST Critical Vulnerabilities",
+        "threshold": "<= 0",
+        "actual": "0 vulnerabilities",
+        "status": "PASSED"
+      },
+      {
+        "rule": "API P95 Response Latency SLA",
+        "threshold": "<= 350.0ms",
+        "actual": "11.38ms",
+        "status": "PASSED"
+      },
+      {
+        "rule": "Concurrent Load Error Rate",
+        "threshold": "<= 1.0%",
+        "actual": "0.0%",
+        "status": "PASSED"
+      }
+    ],
+    "violations": [],
+    "recommendation": "Software satisfies all DevOps Continuous Testing standards. Build approved for deployment."
+  },
+  "coverage": {
+    "total_statements": 552,
+    "covered_statements": 427,
+    "missed_statements": 125,
+    "overall_coverage_pct": 77.4,
+    "modules": [
+      {
+        "module": "app/app.py",
+        "total_statements": 343,
+        "covered_statements": 292,
+        "missed_statements": 51,
+        "coverage_pct": 85.1
+      },
+      {
+        "module": "app/auth.py",
+        "total_statements": 73,
+        "covered_statements": 52,
+        "missed_statements": 21,
+        "coverage_pct": 71.2
+      },
+      {
+        "module": "app/models.py",
+        "total_statements": 49,
+        "covered_statements": 31,
+        "missed_statements": 18,
+        "coverage_pct": 63.3
+      },
+      {
+        "module": "app/services.py",
+        "total_statements": 87,
+        "covered_statements": 52,
+        "missed_statements": 35,
+        "coverage_pct": 59.8
+      }
+    ]
+  },
+  "performance": {
+    "total_requests": 80,
+    "concurrency": 6,
+    "successful_requests": 80,
+    "failed_requests": 0,
+    "error_rate_pct": 0.0,
+    "duration_seconds": 0.087,
+    "requests_per_second": 916.59,
+    "min_latency_ms": 0.29,
+    "max_latency_ms": 36.64,
+    "mean_latency_ms": 4.31,
+    "p50_latency_ms": 2.65,
+    "p90_latency_ms": 7.91,
+    "p95_latency_ms": 11.38,
+    "p99_latency_ms": 34.68,
+    "sla_passed": true,
+    "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
+  },
+  "security": {
+    "files_scanned": 5,
+    "total_findings": 0,
+    "critical_or_high": 0,
+    "medium": 0,
+    "low": 0,
+    "passed": true,
+    "findings": []
+  }
+}
