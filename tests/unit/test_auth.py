@@ -48,3 +48,18 @@ def test_malformed_token():
     payload, err = verify_token("not-a-real-token")
     assert payload is None
     assert "invalid token format" in err.lower()
+def test_corrupted_token_returns_error():
+    token = "eyJhbGciOiJIUzI1NiJ9.@@@invalid@@@.c2ln"
+    payload, err = verify_token(token)
+
+    assert payload is None
+    assert err is not None
+
+
+def test_authenticate_user_invalid_credentials():
+    user = authenticate_user(
+        username="nonexistent_user_123",
+        password="WrongPassword@123"
+    )
+
+    assert user is None

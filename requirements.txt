@@ -6,6 +6,7 @@ Jinja2>=3.1.2
 # Testing & Coverage Frameworks
 pytest>=8.0.0
 pytest-cov>=4.1.0
+coverage>=7.6.0
 
 # Performance & Security (SAST/DAST)
 locust>=2.20.0

@@ -6,3 +6,18 @@ __pycache__/
 *.sqlite
 venv/
 .env
+
+# Coverage data
+.coverage
+.coverage.*
+htmlcov/
+
+# Backup files
+*.backup
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+

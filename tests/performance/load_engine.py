@@ -122,8 +122,8 @@ class LoadTestEngine:
         p99 = percentile(99)
         rps = round(total_requests / duration_sec, 2) if duration_sec > 0 else 0.0
 
-        # SLA Gate: p95 latency <= 350ms, error rate <= 2%
-        sla_passed = (p95 <= 350.0 and error_rate <= 2.0)
+        # SLA Gate: p95 latency <= 350ms, error rate <= 1%
+        sla_passed = (p95 <= 350.0 and error_rate <= 1.0)
 
         return {
             "total_requests": total_requests,
@@ -141,7 +141,7 @@ class LoadTestEngine:
             "p95_latency_ms": p95,
             "p99_latency_ms": p99,
             "sla_passed": sla_passed,
-            "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
+            "sla_criteria": "p95 <= 350ms, error_rate <= 1%"
         }
 
 if __name__ == "__main__":

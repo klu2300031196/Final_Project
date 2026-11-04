@@ -1,209 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevOps Continuous Testing - Pipeline Executive Report</title>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background: #0f172a; color: #f8fafc; padding: 2rem; line-height: 1.5; }
-        .container { max-width: 1100px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 1.5rem; margin-bottom: 2rem; }
-        .title h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
-        .title p { color: #94a3b8; font-size: 0.95rem; }
-        .verdict-pill { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; padding: 8px 16px; border-radius: 9999px; font-size: 1.1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-        .kpi-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.25rem; }
-        .kpi-card .label { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; margin-bottom: 0.5rem; }
-        .kpi-card .value { font-size: 1.75rem; font-weight: 800; }
-        
-        .card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; }
-        .card h2 { font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 1px solid #334155; padding-bottom: 0.75rem; display: flex; justify-content: space-between; }
-        
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.95rem; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid #334155; }
-        th { color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; font-weight: 600; }
-        
-        .recommendation { background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; padding: 1rem; border-radius: 4px; margin-top: 1rem; font-size: 0.95rem; }
-        footer { text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 3rem; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevOps Continuous Testing - Executive Report</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; font-family:Arial,Helvetica,sans-serif; }
+body { background:#0f172a; color:#f8fafc; padding:2rem; line-height:1.5; }
+.container { max-width:1100px; margin:auto; }
+.header { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; border-bottom:1px solid #334155; padding-bottom:1.5rem; margin-bottom:2rem; }
+.title h1 { font-size:1.8rem; }
+.title p { color:#94a3b8; font-size:0.9rem; }
+.verdict { background:rgba(16,185,129,0.15); color:#10b981; border:1px solid #10b981; padding:8px 16px; border-radius:30px; font-weight:bold; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; margin-bottom:2rem; }
+.kpi-card,.card { background:#1e293b; border:1px solid #334155; border-radius:8px; padding:1.25rem; }
+.kpi-card .label { color:#94a3b8; font-size:0.8rem; text-transform:uppercase; margin-bottom:0.5rem; }
+.kpi-card .value { font-size:1.7rem; font-weight:bold; }
+.card { padding:1.5rem; margin-bottom:2rem; overflow-x:auto; }
+.card h2 { font-size:1.2rem; margin-bottom:1rem; border-bottom:1px solid #334155; padding-bottom:0.75rem; }
+table { width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem; }
+th,td { padding:10px 12px; border-bottom:1px solid #334155; }
+th { color:#94a3b8; text-transform:uppercase; font-size:0.75rem; }
+.recommendation { background:rgba(59,130,246,0.1); border-left:4px solid #3b82f6; padding:1rem; margin-top:1rem; }
+footer { text-align:center; color:#64748b; margin-top:3rem; font-size:0.85rem; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <div class="title">
-                <h1>⚡ DevOps Continuous Testing Framework</h1>
-                <p>Automated Pipeline Run Report & Quality Gate Verdict &bull; 2026-11-04T14:35:58.413626</p>
-            </div>
-            <div class="verdict-pill">
-                GATE: PASSED
-            </div>
-        </header>
+<div class="container">
+<header class="header">
+<div class="title">
+<h1>DevOps Continuous Testing Framework</h1>
+<p>Automated Pipeline Run Report | 2026-11-04T19:15:53.446208+00:00</p>
+</div>
+<div class="verdict">GATE: PASSED</div>
+</header>
 
-        <section class="kpi-grid">
-            <div class="kpi-card">
-                <div class="label">Total Test Cases</div>
-                <div class="value" style="color:#38bdf8;">61</div>
-                <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">100% Passed (0 Failures)</div>
-            </div>
-            <div class="kpi-card">
-                <div class="label">Code Coverage</div>
-                <div class="value" style="color:#34d399;">78.1%</div>
-                <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">AST Executable Lines</div>
-            </div>
-            <div class="kpi-card">
-                <div class="label">Latency SLA (P95)</div>
-                <div class="value" style="color:#a78bfa;">27.08ms</div>
-                <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">Throughput: 649.14 RPS</div>
-            </div>
-            <div class="kpi-card">
-                <div class="label">SAST Security Status</div>
-                <div class="value" style="color:#10b981;">0 VULNS</div>
-                <div style="font-size:0.8rem;color:#94a3b8;margin-top:4px;">AST & Secret Audit Passed</div>
-            </div>
-        </section>
+<section class="kpi-grid">
+<div class="kpi-card">
+<div class="label">Total Test Cases</div>
+<div class="value">69</div>
+<div class="label">Passed: 69 | Failed: 0 | Skipped: 0</div>
+</div>
+<div class="kpi-card">
+<div class="label">Code Coverage</div>
+<div class="value">90.4%</div>
+<div class="label">coverage.py executed source-line coverage</div>
+</div>
+<div class="kpi-card">
+<div class="label">Latency SLA (P95)</div>
+<div class="value">24.66 ms</div>
+<div class="label">Throughput: 663.39 RPS</div>
+</div>
+<div class="kpi-card">
+<div class="label">SAST Security Scan</div>
+<div class="value" style="color:#10b981;">0</div>
+<div class="label">High/Critical vulnerabilities | PASSED</div>
+</div>
+</section>
 
-        <section class="card">
-            <h2>
-                <span>DevOps Quality Gate Evaluation</span>
-                <span style="font-size:0.9rem;color:#94a3b8;">5 of 5 Rules Passed</span>
-            </h2>
-            <table>
-                <thead>
-                    <tr><th>Quality Gate Policy</th><th>Required Threshold</th><th>Observed Value</th><th>Status</th></tr>
-                </thead>
-                <tbody>
-                    
+<section class="card">
+<h2>DevOps Quality Gate Evaluation</h2>
+<p>5 of 5 rules passed</p>
+<table>
+<thead><tr><th>Quality Gate Policy</th><th>Required Threshold</th><th>Observed Value</th><th>Status</th></tr></thead>
+<tbody>
             <tr>
-                <td style="font-weight:600;">Automated Test Suite Pass Rate</td>
-                <td style="color:#94a3b8;">>= 100.0% (0 failures)</td>
-                <td style="font-weight:600;">100.0% (0 failed)</td>
-                <td><span style="background:rgba(16,185,129,0.2);color:#10b981;padding:4px 8px;border-radius:4px;font-weight:bold;">PASSED</span></td>
+                <td>Test pass rate</td>
+                <td>&gt;= 100.0%</td>
+                <td>100.0</td>
+                <td><span style="color:#10b981;font-weight:bold;">PASSED</span></td>
             </tr>
             
             <tr>
-                <td style="font-weight:600;">Application Source Code Coverage</td>
-                <td style="color:#94a3b8;">>= 75.0%</td>
-                <td style="font-weight:600;">78.1%</td>
-                <td><span style="background:rgba(16,185,129,0.2);color:#10b981;padding:4px 8px;border-radius:4px;font-weight:bold;">PASSED</span></td>
+                <td>Code coverage</td>
+                <td>&gt;= 75.0%</td>
+                <td>90.4</td>
+                <td><span style="color:#10b981;font-weight:bold;">PASSED</span></td>
             </tr>
             
             <tr>
-                <td style="font-weight:600;">Security SAST/DAST Critical Vulnerabilities</td>
-                <td style="color:#94a3b8;"><= 0</td>
-                <td style="font-weight:600;">0 vulnerabilities</td>
-                <td><span style="background:rgba(16,185,129,0.2);color:#10b981;padding:4px 8px;border-radius:4px;font-weight:bold;">PASSED</span></td>
+                <td>High/Critical vulnerabilities</td>
+                <td>&lt;= 0</td>
+                <td>0</td>
+                <td><span style="color:#10b981;font-weight:bold;">PASSED</span></td>
             </tr>
             
             <tr>
-                <td style="font-weight:600;">API P95 Response Latency SLA</td>
-                <td style="color:#94a3b8;"><= 350.0ms</td>
-                <td style="font-weight:600;">27.08ms</td>
-                <td><span style="background:rgba(16,185,129,0.2);color:#10b981;padding:4px 8px;border-radius:4px;font-weight:bold;">PASSED</span></td>
+                <td>P95 latency</td>
+                <td>&lt;= 350.0 ms</td>
+                <td>24.66</td>
+                <td><span style="color:#10b981;font-weight:bold;">PASSED</span></td>
             </tr>
             
             <tr>
-                <td style="font-weight:600;">Concurrent Load Error Rate</td>
-                <td style="color:#94a3b8;"><= 1.0%</td>
-                <td style="font-weight:600;">0.0%</td>
-                <td><span style="background:rgba(16,185,129,0.2);color:#10b981;padding:4px 8px;border-radius:4px;font-weight:bold;">PASSED</span></td>
+                <td>Load error rate</td>
+                <td>&lt;= 1.0%</td>
+                <td>0.0</td>
+                <td><span style="color:#10b981;font-weight:bold;">PASSED</span></td>
             </tr>
-            
-                </tbody>
-            </table>
-            <div class="recommendation">
-                <strong>Quality Gate Policy Engine:</strong> Software satisfies all DevOps Continuous Testing standards. Build approved for deployment.
-            </div>
-        </section>
+            </tbody>
+</table>
+<div class="recommendation"><strong>Quality Gate Policy Engine:</strong> All quality gate policies passed. Build is eligible for deployment.</div>
+</section>
 
-        <section class="card">
-            <h2>Application Code Coverage (AUT Modules)</h2>
-            <table>
-                <thead>
-                    <tr><th>Target Microservice Module</th><th>Total Statements</th><th>Covered</th><th>Missed</th><th>Coverage</th></tr>
-                </thead>
-                <tbody>
-                    
+<section class="card">
+<h2>Application Code Coverage</h2>
+<table>
+<thead><tr><th>Application Module</th><th>Total Statements</th><th>Covered</th><th>Missed</th><th>Coverage</th></tr></thead>
+<tbody>
             <tr>
-                <td><code>app/app.py</code></td>
-                <td>382</td>
-                <td>327</td>
-                <td>55</td>
+                <td><code>app/__init__.py</code></td>
+                <td>1</td>
+                <td>0</td>
+                <td>1</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;background:#334155;height:8px;border-radius:4px;overflow:hidden;">
-                            <div style="width:85.6%;background:#10b981;height:100%;"></div>
+                            <div style="width:0.0%;background:#f59e0b;height:100%;"></div>
                         </div>
-                        <span style="font-weight:bold;min-width:45px;">85.6%</span>
+                        <span>0.0%</span>
+                    </div>
+                </td>
+            </tr>
+            
+            <tr>
+                <td><code>app/app.py</code></td>
+                <td>318</td>
+                <td>285</td>
+                <td>33</td>
+                <td>
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <div style="flex:1;background:#334155;height:8px;border-radius:4px;overflow:hidden;">
+                            <div style="width:89.6%;background:#10b981;height:100%;"></div>
+                        </div>
+                        <span>89.6%</span>
                     </div>
                 </td>
             </tr>
             
             <tr>
                 <td><code>app/auth.py</code></td>
-                <td>73</td>
-                <td>53</td>
-                <td>20</td>
+                <td>63</td>
+                <td>61</td>
+                <td>2</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;background:#334155;height:8px;border-radius:4px;overflow:hidden;">
-                            <div style="width:72.6%;background:#f59e0b;height:100%;"></div>
+                            <div style="width:96.8%;background:#10b981;height:100%;"></div>
                         </div>
-                        <span style="font-weight:bold;min-width:45px;">72.6%</span>
+                        <span>96.8%</span>
                     </div>
                 </td>
             </tr>
             
             <tr>
                 <td><code>app/models.py</code></td>
-                <td>71</td>
-                <td>47</td>
-                <td>24</td>
+                <td>54</td>
+                <td>42</td>
+                <td>12</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;background:#334155;height:8px;border-radius:4px;overflow:hidden;">
-                            <div style="width:66.2%;background:#f59e0b;height:100%;"></div>
+                            <div style="width:77.8%;background:#f59e0b;height:100%;"></div>
                         </div>
-                        <span style="font-weight:bold;min-width:45px;">66.2%</span>
+                        <span>77.8%</span>
                     </div>
                 </td>
             </tr>
             
             <tr>
                 <td><code>app/services.py</code></td>
-                <td>87</td>
-                <td>52</td>
-                <td>35</td>
+                <td>64</td>
+                <td>64</td>
+                <td>0</td>
                 <td>
                     <div style="display:flex;align-items:center;gap:10px;">
                         <div style="flex:1;background:#334155;height:8px;border-radius:4px;overflow:hidden;">
-                            <div style="width:59.8%;background:#f59e0b;height:100%;"></div>
+                            <div style="width:100.0%;background:#10b981;height:100%;"></div>
                         </div>
-                        <span style="font-weight:bold;min-width:45px;">59.8%</span>
+                        <span>100.0%</span>
                     </div>
                 </td>
             </tr>
-            
-                </tbody>
-            </table>
-        </section>
+            </tbody>
+</table>
+</section>
 
-        <section class="card">
-            <h2>Performance & Load Distribution (Simulated Traffic)</h2>
-            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:1rem;margin-top:0.5rem;">
-                <div><span style="color:#94a3b8;font-size:0.85rem;">Virtual Users:</span> <strong style="font-size:1.1rem;">6</strong></div>
-                <div><span style="color:#94a3b8;font-size:0.85rem;">Min Latency:</span> <strong style="font-size:1.1rem;">0.39ms</strong></div>
-                <div><span style="color:#94a3b8;font-size:0.85rem;">Median (P50):</span> <strong style="font-size:1.1rem;">5.81ms</strong></div>
-                <div><span style="color:#94a3b8;font-size:0.85rem;">95th Percentile:</span> <strong style="font-size:1.1rem;">27.08ms</strong></div>
-                <div><span style="color:#94a3b8;font-size:0.85rem;">Max Latency:</span> <strong style="font-size:1.1rem;">40.99ms</strong></div>
-            </div>
-        </section>
+<section class="card">
+<h2>Performance &amp; Load Distribution (Simulated Traffic)</h2>
+<p>Virtual Users: <strong>6</strong></p>
+<p>Minimum Latency: <strong>0.33 ms</strong></p>
+<p>Median Latency (P50): <strong>5.79 ms</strong></p>
+<p>95th Percentile: <strong>24.66 ms</strong></p>
+<p>Maximum Latency: <strong>42.88 ms</strong></p>
+<p>Error Rate: <strong>0.0%</strong></p>
+</section>
 
-        <footer>
-            Generated by DevOps-Based Continuous Testing Framework &copy; 2026. Automated CI/CD Quality System.
-        </footer>
-    </div>
+<footer>Generated by DevOps-Based Continuous Testing Framework | Automated Testing Report</footer>
+</div>
 </body>
 </html>
-        

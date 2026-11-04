@@ -5,8 +5,7 @@ import sqlite3
 import os
 import json
 import hashlib
-from datetime import datetime
-
+from datetime import datetime, timezone
 DB_FILE = os.environ.get("AUT_DB_FILE", os.path.join(os.path.dirname(__file__), "aut_database.sqlite"))
 
 def get_connection(db_path=None):
@@ -101,7 +100,7 @@ def init_db(db_path=None):
 
 def seed_data(conn):
     cur = conn.cursor()
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
 
     # Default Users
     admin_hash = hash_password("Admin@123")
@@ -133,7 +132,7 @@ def save_test_record(pipeline_id: str, total_tests: int, passed_tests: int, fail
     """Save automated test pipeline run into SQLite test_records table."""
     conn = get_connection(db_path)
     cur = conn.cursor()
-    now = datetime.utcnow().isoformat()
+    now = datetime.now(timezone.utc).isoformat()
     cur.execute("""
     INSERT OR REPLACE INTO test_records 
     (pipeline_id, total_tests, passed_tests, failed_tests, duration_seconds, code_coverage_pct, p95_latency_ms, security_vulnerabilities, verdict, executed_at)

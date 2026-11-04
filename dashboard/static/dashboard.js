@@ -1,15 +1,19 @@
+
 /**
  * DevOps Continuous Testing Dashboard - Frontend Controller
- * Connects to live SSE stream, renders Quality Gate rules, coverage bars, and run history.
+ * Connects to live SSE stream, renders Quality Gate rules,
+ * coverage bars, KPIs, and pipeline run history.
  */
 
 let eventSource = null;
+let reconnectTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     initSSE();
     fetchStatus();
     fetchLatestReport();
     fetchHistory();
+
     setInterval(fetchStatus, 3000);
 });
 
@@ -18,215 +22,477 @@ function initSSE() {
         eventSource.close();
     }
 
+    if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+        reconnectTimer = null;
+    }
+
     eventSource = new EventSource("/api/pipeline/logs/stream");
 
     eventSource.onmessage = (event) => {
         if (!event.data || event.data.startsWith(":")) return;
+
         appendConsoleLine(event.data);
 
-        // Check for stage transitions to animate stepper
-        const d = event.data;
-        if (d.includes("[STAGE 1/5]")) highlightStage("step-sast");
-        if (d.includes("[STAGE 2/5]")) highlightStage("step-tests");
-        if (d.includes("[STAGE 3/5]")) highlightStage("step-cov");
-        if (d.includes("[STAGE 4/5]")) highlightStage("step-perf");
-        if (d.includes("[STAGE 5/5]")) highlightStage("step-gate");
+        const message = event.data;
 
-        if (d.includes("[SUCCESS] PIPELINE FINISHED") || d.includes("[COMPLETE]")) {
+        if (message.includes("[STAGE 1/5]")) {
+            highlightStage("step-sast");
+        }
+        if (message.includes("[STAGE 2/5]")) {
+            highlightStage("step-tests");
+        }
+        if (message.includes("[STAGE 3/5]")) {
+            highlightStage("step-cov");
+        }
+        if (message.includes("[STAGE 4/5]")) {
+            highlightStage("step-perf");
+        }
+        if (message.includes("[STAGE 5/5]")) {
+            highlightStage("step-gate");
+        }
+
+        if (
+            message.includes("[SUCCESS] PIPELINE FINISHED") ||
+            message.includes("[COMPLETE]")
+        ) {
             setTimeout(() => {
                 fetchLatestReport();
                 fetchHistory();
+                fetchStatus();
                 resetStepperSuccess();
             }, 800);
+        }
+
+        if (message.includes("[ERROR]")) {
+            fetchStatus();
         }
     };
 
     eventSource.onerror = () => {
-        // Reconnect after brief pause
-        setTimeout(initSSE, 5000);
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+        }
+
+        reconnectTimer = setTimeout(() => {
+            initSSE();
+        }, 5000);
     };
 }
 
-function appendConsoleLine(text) {
+function appendConsoleLine(message) {
     const consoleBox = document.getElementById("console-output");
+
+    if (!consoleBox) return;
+
     const line = document.createElement("div");
     line.className = "terminal-line";
 
-    if (text.includes("[STAGE") || text.includes("-->") || text.includes("====")) {
+    if (
+        message.includes("[STAGE") ||
+        message.includes("-->") ||
+        message.includes("====")
+    ) {
         line.classList.add("line-info");
-    } else if (text.includes("PASSED") || text.includes("[SUCCESS]") || text.includes("satisfied")) {
+    } else if (
+        message.includes("PASSED") ||
+        message.includes("[SUCCESS]") ||
+        message.includes("satisfied")
+    ) {
         line.classList.add("line-success");
-    } else if (text.includes("FAILED") || text.includes("ERROR") || text.includes("failed")) {
+    } else if (
+        message.includes("FAILED") ||
+        message.includes("ERROR") ||
+        message.includes("failed")
+    ) {
         line.classList.add("line-error");
-    } else if (text.includes("WARNING")) {
+    } else if (message.includes("WARNING")) {
         line.classList.add("line-warn");
     }
 
-    line.innerText = text;
+    line.innerText = message;
     consoleBox.appendChild(line);
     consoleBox.scrollTop = consoleBox.scrollHeight;
 }
 
 function clearConsole() {
     const consoleBox = document.getElementById("console-output");
-    consoleBox.innerHTML = '<div class="terminal-line">[SYSTEM] Console cleared.</div>';
+
+    if (!consoleBox) return;
+
+    consoleBox.innerHTML =
+        '<div class="terminal-line">[SYSTEM] Console cleared.</div>';
 }
 
 async function fetchStatus() {
     try {
-        const res = await fetch("/api/status");
-        const data = await res.json();
-        
-        const autText = document.getElementById("aut-status-text");
-        autText.innerText = `AUT: ${data.aut_status}`;
+        const response = await fetch("/api/status");
+        if (!response.ok) {
+            throw new Error(`Status request failed: ${response.status}`);
+        }
 
+        const data = await response.json();
+
+        const autText = document.getElementById("aut-status-text");
         const runnerDot = document.getElementById("runner-dot");
         const runnerText = document.getElementById("runner-status-text");
-        const btn = document.getElementById("btn-trigger");
+        const button = document.getElementById("btn-trigger");
+
+        if (autText) {
+            autText.innerText = `AUT: ${data.aut_status}`;
+        }
 
         if (data.pipeline_running) {
-            runnerDot.className = "status-dot dot-running";
-            runnerText.innerText = "RUNNER: EXECUTING";
-            btn.disabled = true;
-            btn.style.opacity = "0.6";
-            btn.innerText = "Running Pipeline...";
+            if (runnerDot) {
+                runnerDot.className = "status-dot dot-running";
+            }
+
+            if (runnerText) {
+                runnerText.innerText = "RUNNER: EXECUTING";
+            }
+
+            if (button) {
+                button.disabled = true;
+                button.style.opacity = "0.6";
+                button.innerText = "Running Pipeline...";
+            }
         } else {
-            runnerDot.className = "status-dot dot-idle";
-            runnerText.innerText = "RUNNER: IDLE";
-            btn.disabled = false;
-            btn.style.opacity = "1";
-            btn.innerHTML = '<span class="play-icon">▶</span> Run Full Testing Pipeline';
+            if (runnerDot) {
+                runnerDot.className = "status-dot dot-idle";
+            }
+
+            if (runnerText) {
+                runnerText.innerText = "RUNNER: IDLE";
+            }
+
+            if (button) {
+                button.disabled = false;
+                button.style.opacity = "1";
+                button.innerHTML =
+                    '<span class="play-icon">▶</span> Run Full Testing Pipeline';
+            }
         }
-    } catch (e) {
-        console.error("Status fetch error", e);
+    } catch (error) {
+        console.error("Status fetch error:", error);
     }
 }
 
 async function triggerPipeline() {
-    const btn = document.getElementById("btn-trigger");
-    btn.disabled = true;
-    btn.innerText = "Initiating Pipeline...";
+    const button = document.getElementById("btn-trigger");
+
+    if (!button || button.disabled) return;
+
+    button.disabled = true;
+    button.innerText = "Initiating Pipeline...";
 
     clearConsole();
-    appendConsoleLine("[USER] Pipeline triggered from Web Dashboard.");
+
+    appendConsoleLine(
+        "[USER] Pipeline triggered from Web Dashboard."
+    );
+
     resetStepperRunning();
 
     try {
-        const res = await fetch("/api/pipeline/trigger", { method: "POST" });
-        if (!res.ok) {
-            const err = await res.json();
-            appendConsoleLine(`[ERROR] ${err.error || "Failed to trigger pipeline"}`);
+        const response = await fetch("/api/pipeline/trigger", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            appendConsoleLine(
+                `[ERROR] ${data.error || "Failed to trigger pipeline"}`
+            );
+            await fetchStatus();
+            return;
         }
-    } catch (e) {
-        appendConsoleLine(`[ERROR] Network error: ${e.message}`);
+
+        appendConsoleLine(
+            "[SYSTEM] Pipeline execution request accepted."
+        );
+    } catch (error) {
+        appendConsoleLine(`[ERROR] Network error: ${error.message}`);
+        await fetchStatus();
     }
 }
 
 async function fetchLatestReport() {
     try {
-        const res = await fetch("/api/latest-report");
-        if (!res.ok) return;
-        const data = await res.json();
+        const response = await fetch("/api/latest-report");
+
+        if (!response.ok) {
+            console.warn("Latest report is not available yet.");
+            return;
+        }
+
+        const data = await response.json();
         renderReportData(data);
-    } catch (e) {
-        console.error("Report fetch error", e);
+    } catch (error) {
+        console.error("Report fetch error:", error);
     }
 }
 
 function renderReportData(data) {
-    const qg = data.quality_gate || {};
-    const verdict = qg.verdict || "PASSED";
-    const cov = data.coverage || {};
-    const perf = data.performance || {};
+    const qualityGate = data.quality_gate || {};
+    const verdict = qualityGate.verdict || "UNKNOWN";
 
-    // 1. Global Verdict Pill
+    // Actual report structure: metrics are stored inside stages.
+    const stages = data.stages || {};
+
+    const coverage =
+        stages.code_coverage || data.coverage || {};
+
+    const performance =
+        stages.performance || data.performance || {};
+
+    const security =
+        stages.security_sast || data.security || {};
+
+    const functional =
+        stages.functional_tests || {};
+
+    // 1. Global Quality Gate verdict
     const globalVerdict = document.getElementById("global-verdict");
-    globalVerdict.innerText = `GATE: ${verdict}`;
-    globalVerdict.className = verdict === "PASSED" ? "verdict-tag tag-passed" : "verdict-tag tag-running";
 
-    // 2. KPI Cards
-    document.getElementById("kpi-tests").innerText = `${data.total_tests || 53} / ${data.total_tests || 53}`;
-    document.getElementById("kpi-coverage").innerText = `${cov.overall_coverage_pct || 77.4}%`;
-    document.getElementById("kpi-latency").innerText = `${perf.p95_latency_ms || 11.4} ms`;
-    document.getElementById("kpi-rps").innerText = `Throughput: ~${perf.requests_per_second || 916} RPS`;
-    document.getElementById("kpi-security").innerText = `${data.security ? data.security.critical_or_high : 0} HIGH`;
+    if (globalVerdict) {
+        globalVerdict.innerText = `GATE: ${verdict}`;
 
-    // 3. Quality Gate Scorecard Table
-    const tbody = document.querySelector("#gate-rules-table tbody");
-    tbody.innerHTML = "";
-    (qg.checks || []).forEach(c => {
-        const tr = document.createElement("tr");
-        const statusClass = c.status === "PASSED" ? "rule-pass" : "rule-fail";
-        tr.innerHTML = `
-            <td style="font-weight:600;">${c.rule}</td>
-            <td style="color:var(--text-muted);">${c.threshold}</td>
-            <td style="font-weight:700;">${c.actual}</td>
-            <td><span class="rule-pill ${statusClass}">${c.status}</span></td>
-        `;
-        tbody.appendChild(tr);
-    });
+        globalVerdict.className =
+            verdict === "PASSED"
+                ? "verdict-tag tag-passed"
+                : "verdict-tag tag-running";
+    }
 
-    // 4. Module Code Coverage Bars
-    const covBox = document.getElementById("coverage-progress-container");
-    covBox.innerHTML = "";
-    (cov.modules || []).forEach(m => {
-        const item = document.createElement("div");
-        item.className = "cov-item";
-        item.innerHTML = `
-            <div class="cov-item-header">
-                <span class="cov-module-name">${m.module}</span>
-                <span>${m.coverage_pct}% (${m.covered_statements}/${m.total_statements})</span>
-            </div>
-            <div class="cov-bar-bg">
-                <div class="cov-bar-fill" style="width: ${m.coverage_pct}%"></div>
-            </div>
-        `;
-        covBox.appendChild(item);
-    });
+    // 2. Test and performance KPI cards
+    const totalTests =
+        functional.total ?? data.total_tests ?? 0;
+
+    const passedTests =
+        functional.passed ?? totalTests;
+
+    const coveragePercentage =
+        coverage.overall_coverage_pct ?? 0;
+
+    const p95Latency =
+        performance.p95_latency_ms ?? 0;
+
+    const throughput =
+        performance.requests_per_second ?? 0;
+
+    const securityFindings =
+        security.critical_or_high ?? 0;
+
+    const testsElement = document.getElementById("kpi-tests");
+    const coverageElement = document.getElementById("kpi-coverage");
+    const latencyElement = document.getElementById("kpi-latency");
+    const throughputElement = document.getElementById("kpi-rps");
+    const securityElement = document.getElementById("kpi-security");
+
+    if (testsElement) {
+        testsElement.innerText =
+            `${passedTests} / ${totalTests}`;
+    }
+
+    if (coverageElement) {
+        coverageElement.innerText =
+            `${coveragePercentage}%`;
+    }
+
+    if (latencyElement) {
+        latencyElement.innerText =
+            `${p95Latency} ms`;
+    }
+
+    if (throughputElement) {
+        throughputElement.innerText =
+            `Throughput: ~${throughput} RPS`;
+    }
+
+    if (securityElement) {
+        securityElement.innerText =
+            `${securityFindings} HIGH`;
+    }
+
+    // 3. Quality Gate scorecard
+    const tableBody = document.querySelector(
+        "#gate-rules-table tbody"
+    );
+
+    if (tableBody) {
+        tableBody.innerHTML = "";
+
+        (qualityGate.checks || []).forEach((check) => {
+            const row = document.createElement("tr");
+
+            const statusClass =
+                check.status === "PASSED"
+                    ? "rule-pass"
+                    : "rule-fail";
+
+            const ruleCell = document.createElement("td");
+            ruleCell.style.fontWeight = "600";
+            ruleCell.textContent = check.rule ?? "";
+
+            const thresholdCell = document.createElement("td");
+            thresholdCell.style.color = "var(--text-muted)";
+            thresholdCell.textContent = check.threshold ?? "";
+
+            const actualCell = document.createElement("td");
+            actualCell.style.fontWeight = "700";
+            actualCell.textContent = check.actual ?? "";
+
+            const statusCell = document.createElement("td");
+            const statusPill = document.createElement("span");
+            statusPill.className = `rule-pill ${statusClass}`;
+            statusPill.textContent = check.status ?? "UNKNOWN";
+
+            statusCell.appendChild(statusPill);
+
+            row.appendChild(ruleCell);
+            row.appendChild(thresholdCell);
+            row.appendChild(actualCell);
+            row.appendChild(statusCell);
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // 4. Module-level code coverage
+    const coverageBox = document.getElementById(
+        "coverage-progress-container"
+    );
+
+    if (coverageBox) {
+        coverageBox.innerHTML = "";
+
+        (coverage.modules || []).forEach((module) => {
+            const item = document.createElement("div");
+            item.className = "cov-item";
+
+            const header = document.createElement("div");
+            header.className = "cov-item-header";
+
+            const moduleName = document.createElement("span");
+            moduleName.className = "cov-module-name";
+            moduleName.textContent = module.module ?? "Unknown module";
+
+            const modulePercentage = document.createElement("span");
+            modulePercentage.textContent =
+                `${module.coverage_pct ?? 0}% ` +
+                `(${module.covered_statements ?? 0}/` +
+                `${module.total_statements ?? 0})`;
+
+            header.appendChild(moduleName);
+            header.appendChild(modulePercentage);
+
+            const barBackground = document.createElement("div");
+            barBackground.className = "cov-bar-bg";
+
+            const barFill = document.createElement("div");
+            barFill.className = "cov-bar-fill";
+
+            const percentage = Number(module.coverage_pct) || 0;
+
+            barFill.style.width =
+                `${Math.min(100, Math.max(0, percentage))}%`;
+
+            barBackground.appendChild(barFill);
+
+            item.appendChild(header);
+            item.appendChild(barBackground);
+
+            coverageBox.appendChild(item);
+        });
+    }
 }
 
 async function fetchHistory() {
     try {
-        const res = await fetch("/api/history");
-        const data = await res.json();
-        const tbody = document.querySelector("#history-table tbody");
-        tbody.innerHTML = "";
+        const response = await fetch("/api/history");
 
-        (data.runs || []).slice(0, 5).forEach(r => {
-            const tr = document.createElement("tr");
-            const timeStr = r.timestamp ? new Date(r.timestamp).toLocaleTimeString() : "Just now";
-            tr.innerHTML = `
-                <td><code>${r.id}</code></td>
-                <td>${timeStr}</td>
-                <td>${r.duration}s</td>
-                <td><span class="rule-pill rule-pass">${r.verdict}</span></td>
-            `;
-            tbody.appendChild(tr);
+        if (!response.ok) {
+            throw new Error(`History request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        const tableBody = document.querySelector(
+            "#history-table tbody"
+        );
+
+        if (!tableBody) return;
+
+        tableBody.innerHTML = "";
+
+        (data.runs || []).slice(0, 5).forEach((run) => {
+            const row = document.createElement("tr");
+
+            const idCell = document.createElement("td");
+            const idCode = document.createElement("code");
+            idCode.textContent = run.id ?? "Unknown";
+            idCell.appendChild(idCode);
+
+            const timeCell = document.createElement("td");
+            timeCell.textContent = run.timestamp
+                ? new Date(run.timestamp).toLocaleTimeString()
+                : "Just now";
+
+            const durationCell = document.createElement("td");
+            durationCell.textContent =
+                `${run.duration ?? 0}s`;
+
+            const verdictCell = document.createElement("td");
+            const verdictPill = document.createElement("span");
+
+            verdictPill.className =
+                `rule-pill ${
+                    run.verdict === "PASSED"
+                        ? "rule-pass"
+                        : "rule-fail"
+                }`;
+
+            verdictPill.textContent = run.verdict ?? "UNKNOWN";
+
+            verdictCell.appendChild(verdictPill);
+
+            row.appendChild(idCell);
+            row.appendChild(timeCell);
+            row.appendChild(durationCell);
+            row.appendChild(verdictCell);
+
+            tableBody.appendChild(row);
         });
-    } catch (e) {
-        console.error("History fetch error", e);
+    } catch (error) {
+        console.error("History fetch error:", error);
     }
 }
 
 function highlightStage(stageId) {
-    document.querySelectorAll(".stage-step").forEach(s => s.classList.remove("active-step"));
+    document.querySelectorAll(".stage-step").forEach((step) => {
+        step.classList.remove("active-step");
+    });
+
     const target = document.getElementById(stageId);
+
     if (target) {
         target.classList.add("active-step");
     }
 }
 
 function resetStepperRunning() {
-    document.querySelectorAll(".stage-step").forEach(s => {
-        s.classList.remove("active-step");
-        s.classList.remove("success-step");
+    document.querySelectorAll(".stage-step").forEach((step) => {
+        step.classList.remove("active-step");
+        step.classList.remove("success-step");
     });
+
     highlightStage("step-sast");
 }
 
 function resetStepperSuccess() {
-    document.querySelectorAll(".stage-step").forEach(s => {
-        s.classList.remove("active-step");
-        s.classList.add("success-step");
+    document.querySelectorAll(".stage-step").forEach((step) => {
+        step.classList.remove("active-step");
+        step.classList.add("success-step");
     });
 }

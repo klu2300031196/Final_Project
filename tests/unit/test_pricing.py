@@ -65,3 +65,6 @@ def test_calculate_order_summary_end_to_end():
     assert summary["discount"] == 50.0
     assert summary["tax"] == 12.0
     assert summary["total_amount"] == 162.0
+def test_calculate_discount_negative_subtotal():
+    with pytest.raises(ValueError, match="Subtotal cannot be negative"):
+        PricingService.calculate_discount(-100.0)

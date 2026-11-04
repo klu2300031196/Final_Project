@@ -78,3 +78,34 @@ def test_post_test_records_valid_token(client, admin_headers):
     res = client.post("/api/test-records", headers=admin_headers, json=payload)
     assert res.status_code == 201
     assert res.get_json()["pipeline_id"] == "CT-SECURITY-AUDIT-VERIFIED-1"
+def test_post_test_records_missing_pipeline_id(client, admin_headers):
+    payload = {
+        "total_tests": 10,
+        "passed_tests": 10,
+        "failed_tests": 0
+    }
+
+    response = client.post(
+        "/api/test-records",
+        headers=admin_headers,
+        json=payload
+    )
+
+    assert response.status_code == 400
+    assert "pipeline_id is required" in response.get_json()["error"]
+def test_post_test_records_missing_pipeline_id(client, admin_headers):
+    """POST without pipeline_id must return HTTP 400."""
+    payload = {
+        "total_tests": 10,
+        "passed_tests": 10,
+        "failed_tests": 0
+    }
+
+    response = client.post(
+        "/api/test-records",
+        headers=admin_headers,
+        json=payload
+    )
+
+    assert response.status_code == 400
+    assert "pipeline_id is required" in response.get_json()["error"]

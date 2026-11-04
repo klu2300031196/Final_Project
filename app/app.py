@@ -6,7 +6,7 @@ Includes telemetry metrics and health check for DevOps Continuous Testing.
 import os
 import time
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from app.models import get_connection, init_db, hash_password, save_test_record, get_test_records
 from app.auth import generate_token, authenticate_user, login_required
@@ -86,7 +86,7 @@ def create_app(db_path=None):
             "version": "1.0.0",
             "database": db_status,
             "uptime_seconds": uptime_seconds,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }), 200
 
     @app.route("/metrics", methods=["GET"])
@@ -129,7 +129,7 @@ def create_app(db_path=None):
         cur = conn.cursor()
         try:
             pwd_hash = hash_password(password)
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             cur.execute("INSERT INTO users (username, password_hash, email, role, created_at) VALUES (?, ?, ?, ?, ?)",
                         (username, pwd_hash, email, role, now))
             conn.commit()
@@ -276,7 +276,7 @@ def create_app(db_path=None):
 
         conn = get_db()
         cur = conn.cursor()
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         cur.execute("INSERT INTO products (name, category, price, stock, description, created_at) VALUES (?, ?, ?, ?, ?, ?)",
                     (name, category, price, stock, desc, now))
         conn.commit()
@@ -344,7 +344,7 @@ def create_app(db_path=None):
             for itm in enriched_items:
                 cur.execute("UPDATE products SET stock = stock - ? WHERE id = ?", (itm["quantity"], itm["product_id"]))
 
-            now = datetime.utcnow().isoformat()
+            now = datetime.now(timezone.utc).isoformat()
             user_id = request.current_user["sub"]
             cur.execute("""
             INSERT INTO orders (user_id, items_json, subtotal, discount, total_amount, status, created_at)
@@ -437,7 +437,7 @@ def create_app(db_path=None):
             conn.close()
             return jsonify({"error": "Payment failed", "reason": msg}), 402
 
-        now = datetime.utcnow().isoformat()
+        now = datetime.now(timezone.utc).isoformat()
         cur.execute("""
         INSERT INTO payments (order_id, amount, method, transaction_id, status, processed_at)
         VALUES (?, ?, ?, ?, 'SUCCESS', ?)

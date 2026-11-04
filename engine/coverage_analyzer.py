@@ -1,102 +1,126 @@
 """
-Code Coverage Analyzer for AUT (Application Under Test)
-Analyzes executable AST statements vs executed statements to compute exact code coverage.
+Code Coverage Analyzer for AUT (Application Under Test).
+Uses coverage.py to measure actual executed Python source lines.
 """
-import ast
+
 import os
-import sys
-from typing import Dict, Any, List
+from typing import Dict, Any
+
+from coverage import Coverage
+
 
 class CodeCoverageAnalyzer:
-    """Analyzes Python code coverage across Application Under Test modules."""
+    """Measures application source-code coverage without rerunning pytest."""
 
     def __init__(self, target_dir: str = None):
-        self.target_dir = target_dir or os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "app"))
+        self.project_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "..")
+        )
 
-    def _get_executable_lines(self, filepath: str) -> set:
-        """Parse Python file using AST to extract all executable statement line numbers."""
-        executable = set()
-        with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-            content = f.read()
+        self.target_dir = os.path.abspath(
+            target_dir or os.path.join(self.project_dir, "app")
+        )
 
-        try:
-            tree = ast.parse(content, filename=filepath)
-            for node in ast.walk(tree):
-                # Nodes that represent executable statements
-                if isinstance(node, (ast.stmt, ast.expr)) and hasattr(node, "lineno"):
-                    # Exclude docstrings and module-level trivial statements
-                    if isinstance(node, ast.Expr) and isinstance(node.value, ast.Constant) and isinstance(node.value.value, str):
-                        continue
-                    executable.add(node.lineno)
-        except Exception:
-            pass
-        return executable
+        self.coverage_file = os.path.join(
+            self.project_dir, ".coverage"
+        )
 
     def run_coverage_analysis(self) -> Dict[str, Any]:
-        """Run full coverage analysis by executing test suite with trace tracking."""
-        covered_lines_by_file = {}
-        for root, _, files in os.walk(self.target_dir):
-            for file in files:
-                if file.endswith(".py") and not file.startswith("__"):
-                    filepath = os.path.abspath(os.path.join(root, file))
-                    covered_lines_by_file[filepath] = set()
+        """
+        Read coverage data collected during functional testing.
+        Does not execute tests again.
+        """
 
-        def trace_calls(frame, event, arg):
-            if event == "line":
-                filename = os.path.abspath(frame.f_code.co_filename)
-                if filename in covered_lines_by_file:
-                    covered_lines_by_file[filename].add(frame.f_lineno)
-            return trace_calls
+        if not os.path.isdir(self.target_dir):
+            raise FileNotFoundError(
+                f"Application source directory not found: {self.target_dir}"
+            )
 
-        # Temporarily enable system trace
-        old_trace = sys.gettrace()
-        sys.settrace(trace_calls)
+        if not os.path.isfile(self.coverage_file):
+            raise FileNotFoundError(
+                "Coverage data not found. Run the functional tests with coverage enabled."
+            )
 
-        try:
-            # Run pytest suite programmatically
-            import pytest
-            tests_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tests"))
-            pytest.main(["-q", tests_dir, "--disable-warnings"])
-        finally:
-            sys.settrace(old_trace)
+        cov = Coverage(
+            data_file=self.coverage_file,
+            source=[self.target_dir]
+        )
 
-        # Calculate module-wise and global coverage
+        cov.load()
+
+        data = cov.get_data()
+        measured_files = sorted(data.measured_files())
+
         files_summary = []
-        total_exec = 0
+        total_statements = 0
         total_covered = 0
 
-        for filepath, covered_lines in covered_lines_by_file.items():
-            rel_name = os.path.relpath(filepath, self.target_dir)
-            exec_lines = self._get_executable_lines(filepath)
-            
-            # Hit count
-            hits = len(exec_lines.intersection(covered_lines))
-            total = len(exec_lines)
-            cov_pct = round((hits / total) * 100.0, 1) if total > 0 else 100.0
+        for filepath in measured_files:
+            filepath = os.path.abspath(filepath)
 
-            total_exec += total
-            total_covered += hits
+            if not filepath.startswith(self.target_dir + os.sep):
+                continue
+
+            if not filepath.endswith(".py"):
+                continue
+
+            if not os.path.isfile(filepath):
+                continue
+
+            analysis = cov.analysis2(filepath)
+
+            executable_lines = set(analysis[1])
+            missing_lines = set(analysis[3])
+
+            total = len(executable_lines)
+            missed = len(missing_lines)
+            covered = total - missed
+
+            coverage_pct = (
+                round(covered / total * 100.0, 1)
+                if total > 0 else 0.0
+            )
+
+            total_statements += total
+            total_covered += covered
+
+            relative_name = os.path.relpath(
+                filepath, self.target_dir
+            )
 
             files_summary.append({
-                "module": f"app/{rel_name.replace(chr(92), '/')}",
+                "module": f"app/{relative_name.replace(os.sep, '/')}",
                 "total_statements": total,
-                "covered_statements": hits,
-                "missed_statements": total - hits,
-                "coverage_pct": cov_pct
+                "covered_statements": covered,
+                "missed_statements": missed,
+                "coverage_pct": coverage_pct
             })
 
-        global_pct = round((total_covered / total_exec) * 100.0, 1) if total_exec > 0 else 0.0
+        overall_pct = (
+            round(total_covered / total_statements * 100.0, 1)
+            if total_statements > 0 else 0.0
+        )
+
+        if total_statements == 0:
+            raise RuntimeError(
+                "No application source statements were measured. "
+                "Check the coverage configuration and test imports."
+            )
 
         return {
-            "total_statements": total_exec,
+            "measurement_type": "coverage.py executed source-line coverage",
+            "total_statements": total_statements,
             "covered_statements": total_covered,
-            "missed_statements": total_exec - total_covered,
-            "overall_coverage_pct": global_pct,
-            "modules": sorted(files_summary, key=lambda x: x["module"])
+            "missed_statements": total_statements - total_covered,
+            "overall_coverage_pct": overall_pct,
+            "modules": files_summary
         }
 
+
 if __name__ == "__main__":
-    analyzer = CodeCoverageAnalyzer()
-    res = analyzer.run_coverage_analysis()
     import json
-    print(json.dumps(res, indent=2))
+
+    analyzer = CodeCoverageAnalyzer()
+    result = analyzer.run_coverage_analysis()
+
+    print(json.dumps(result, indent=2))

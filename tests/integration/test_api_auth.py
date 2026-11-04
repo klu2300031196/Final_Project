@@ -76,3 +76,32 @@ def test_forbidden_role_access(client, customer_headers):
     response = client.post("/api/products", headers=customer_headers, json=new_product)
     assert response.status_code == 403
     assert "insufficient permissions" in response.get_json()["error"].lower()
+def test_registration_missing_required_fields(client):
+    response = client.post("/api/auth/register", json={
+        "username": "missing_email",
+        "password": "Password@123"
+    })
+
+    assert response.status_code == 400
+    assert "Missing required fields" in response.get_json()["error"]
+
+
+def test_registration_invalid_role_defaults_to_customer(client):
+    response = client.post("/api/auth/register", json={
+        "username": "invalid_role_user",
+        "password": "Password@123",
+        "email": "invalidrole@devops.org",
+        "role": "superadmin"
+    })
+
+    assert response.status_code == 201
+    assert response.get_json()["role"] == "customer"
+
+
+def test_login_missing_credentials(client):
+    response = client.post("/api/auth/login", json={
+        "username": "developer_alice"
+    })
+
+    assert response.status_code == 400
+    assert "required" in response.get_json()["error"].lower()

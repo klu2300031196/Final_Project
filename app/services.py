@@ -4,8 +4,7 @@ Includes Pricing Engine, Order Workflow, and Payment Gateway Simulation.
 """
 from typing import List, Dict, Tuple
 import uuid
-from datetime import datetime
-
+from datetime import datetime, timezone
 class PricingService:
     """Calculates order totals, progressive discounts, promo codes, and taxes."""
     
@@ -116,5 +115,5 @@ class PaymentSimulator:
             "amount": round(amount, 2),
             "method": method_upper,
             "status": "SUCCESS",
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.now(timezone.utc).isoformat()
         }
