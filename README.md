@@ -1,191 +1,424 @@
 # ⚡ DevOps-Based Continuous Testing Framework & Quality Gate Hub
 
-> An Enterprise-Grade, Production-Ready Continuous Testing and Quality Engineering Framework designed for modern CI/CD pipelines. Features multi-layer test automation, AST code coverage, Static Application Security Testing (SAST), concurrent performance SLAs, and an interactive real-time Web Dashboard.
+An automated DevOps Continuous Testing and Quality Engineering Framework designed to integrate functional testing, code coverage, security scanning, performance testing, and quality gate enforcement into a unified CI/CD-oriented platform.
 
-[![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions%20%7C%20Jenkins-blue)](https://github.com)
-[![Pytest Tests](https://img.shields.io/badge/Tests-54%20Passed%20(100%25)-brightgreen)](tests/)
-[![Code Coverage](https://img.shields.io/badge/Coverage-77.4%25-green)](reports/executive_dashboard.html)
-[![Security SAST](https://img.shields.io/badge/Security-0%20Vulnerabilities-success)](tests/security/)
-[![Quality Gate](https://img.shields.io/badge/Quality%20Gate-PASSED-brightgreen)](reports/)
+![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions%20%7C%20Jenkins-blue)
+![Tests](https://img.shields.io/badge/Tests-69%20Passed-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-90.4%25-green)
+![Security](https://img.shields.io/badge/High%2FCritical%20Vulnerabilities-0-success)
+![Quality Gate](https://img.shields.io/badge/Quality%20Gate-PASSED-brightgreen)
 
 ---
 
 ## 📌 Executive Summary
 
-Modern software delivery demands rapid releases without compromising security, reliability, or performance. Traditional manual testing or disjointed test runs cause release bottlenecks. 
+Modern software delivery requires frequent releases without compromising software quality, security, reliability, or performance.
 
-This project delivers a **DevOps-Based Continuous Testing Framework** that acts as an automated quality firewall within CI/CD pipelines. It automates testing across **five distinct validation layers**:
-1. **Layer 1: Unit Testing**: Pure business logic, pricing engines, promo validation, and token authentication.
-2. **Layer 2: API & Integration Testing**: End-to-end RESTful endpoint verification, inventory depletion, transaction integrity, and error boundaries.
-3. **Layer 3: Performance & Load Testing**: Multi-threaded concurrent workload generation measuring real-time latency percentiles ($P_{50}, P_{90}, P_{95}, P_{99}$) and requests per second (RPS).
-4. **Layer 4: Static & Dynamic Security Testing (DevSecOps)**: AST code scanning, secret detection, SQL injection fuzzing, and HTTP security header compliance.
-5. **Layer 5: Quality Gate Enforcement**: Automated policy engine that approves or blocks production deployment based on strict quantitative thresholds.
+This project implements a **DevOps-Based Continuous Testing Framework** that acts as an automated quality control layer within a CI/CD-oriented software delivery process.
 
----
+The framework integrates five major validation stages:
+
+1. **SAST Security:** Source-code scanning and security vulnerability detection.
+2. **Automated Functional Testing:** Unit, integration, and end-to-end workflow tests using PyTest.
+3. **Code Coverage:** Actual executed source-line coverage measurement using `coverage.py`.
+4. **Performance Testing:** Concurrent request execution with latency and throughput measurements.
+5. **Quality Gate Enforcement:** Automated evaluation of test results, coverage, security, and performance against predefined thresholds.
+
+The platform also provides a web dashboard, live pipeline execution logs, persistent test execution records, and downloadable reports.
 
 ## 🏗️ System Architecture
 
 ```mermaid
 flowchart TD
-    subgraph Developer_QA["Developer & QA Team"]
-        Dev["Developer Commit"] --> Git["Git Version Control"]
-    end
+    Dev["Developer"] --> Git["GitHub Repository"]
 
-    subgraph CI_CD["CI/CD Automation Pipelines"]
-        Git --> GHA["GitHub Actions Workflow"]
-        Git --> JNK["Jenkins Declarative Pipeline"]
-    end
+    Git --> CI["CI/CD Workflows"]
+    Git --> Jenkins["Jenkins Pipeline"]
 
-    subgraph Testing_Hub["Central Testing Hub & Dashboard (Port 8080)"]
-        UI["Real-time Web Dashboard"] --> Engine["Orchestration Engine (test_runner.py)"]
-        GHA --> Engine
-        JNK --> Engine
-    end
+    CI --> Hub["DevTestOps Hub Dashboard"]
+    Jenkins --> Hub
 
-    subgraph Testing_Matrix["Continuous Testing Matrix (5 Layers)"]
-        Engine --> L1["1. SAST Security & Secret Scan"]
-        Engine --> L2["2. Automated PyTest Suites (54 Tests)"]
-        Engine --> L3["3. AST Code Coverage Analyzer"]
-        Engine --> L4["4. Concurrent Performance Engine (Locust/Threading)"]
-        Engine --> L5["5. DevOps Quality Gate Evaluator"]
-    end
+    Hub --> Runner["Pipeline Orchestration Engine"]
 
-    subgraph AUT["Application Under Test (AUT - Port 5000)"]
-        L2 --> AppAPI["Flask RESTful Microservices API"]
-        L4 --> AppAPI
-        AppAPI --> DB[(SQLite Database)]
-    end
+    Runner --> SAST["SAST Security Scanner"]
+    Runner --> Tests["PyTest Test Suites"]
+    Runner --> Coverage["coverage.py Analyzer"]
+    Runner --> Performance["Performance Load Engine"]
 
-    subgraph Deliverables["Quality Gate & Artifacts"]
-        L5 --> Verdict{"Quality Gate Met?"}
-        Verdict -- "PASSED" --> Deploy["Approved for Production Deployment"]
-        Verdict -- "FAILED" --> Block["Build Blocked & Alerts Fired"]
-        L5 --> Reports["Generated Artifacts:\n- test_report.json\n- junit_report.xml\n- executive_dashboard.html"]
-    end
+    Tests --> AUT["Flask Application Under Test"]
+    Performance --> AUT
+    AUT --> DB[("SQLite Database")]
+
+    SAST --> Gate["Quality Gate Engine"]
+    Tests --> Gate
+    Coverage --> Gate
+    Performance --> Gate
+
+    Gate --> Decision{"Quality Gate Decision"}
+
+    Decision -->|PASSED| Approved["Deployment Eligible"]
+    Decision -->|FAILED| Blocked["Deployment Blocked"]
+
+    Gate --> Reports["HTML / JSON / JUnit Reports"]
 ```
 
----
+## 🛠️ Technology Stack
 
-## 🚀 Quick Start Guide (One-Click Launch)
+| Component | Technology |
+|---|---|
+| Backend / AUT | Python, Flask |
+| Frontend | HTML, CSS, JavaScript |
+| Dashboard | Flask-based web dashboard |
+| Automated Testing | PyTest |
+| Code Coverage | coverage.py |
+| Security Testing | Custom SAST scanner, AST analysis |
+| Performance Testing | Python concurrent load engine |
+| Database | SQLite |
+| Containerization | Docker, Docker Compose |
+| CI/CD | GitHub Actions, Jenkins |
+| Version Control | Git, GitHub |
+| Reporting | HTML, JSON, JUnit XML |
+| Live Dashboard Updates | Server-Sent Events (SSE) |
+
+## 🚀 Quick Start Guide
 
 ### Prerequisites
-- Python 3.8+ (Python 3.10+ recommended)
+
+- Python 3.10 or later
 - Git
+- Docker Desktop (for containerized execution)
+- Windows PowerShell or a compatible terminal
 
-### 1. One-Click Launch (Windows)
-Double-click `start_all.bat` or run:
+### 1. Clone the Repository
+
 ```powershell
-python scripts/start_devops_platform.py
+git clone https://github.com/klu2300031196/Final_Project.git
+cd Final_Project
 ```
-This automatically:
-1. Spawns the **Application Under Test (AUT)** on `http://localhost:5000`
-2. Spawns the **DevOps Continuous Testing Hub** on `http://localhost:8080`
-3. Automatically opens your default web browser to the dashboard!
 
----
+### 2. Start Using Docker Compose
 
-### 2. Running Continuous Testing via Command Line
-To run the automated multi-layer test suite and Quality Gate evaluator directly:
+Build and start both application services:
+
+```powershell
+docker compose up -d --build
+```
+
+The platform starts two services:
+
+- Application Under Test (AUT)
+- Continuous Testing Dashboard
+
+### 3. Access the Application
+
+| Component | URL |
+|---|---|
+| Testing Dashboard | http://localhost:8080 |
+| Target AUT Web Store | http://localhost:5000 |
+| AUT Health Check | http://localhost:5000/health |
+| AUT Metrics | http://localhost:5000/metrics |
+| Executive HTML Report | http://localhost:8080/reports/executive_dashboard.html |
+| JUnit XML Report | http://localhost:8080/reports/junit_report.xml |
+| JSON Report | http://localhost:8080/reports/test_report.json |
+
+### 4. Run the Pipeline
+
+Open the dashboard:
+
+http://localhost:8080
+
+Click **Run Full Testing Pipeline**.
+
+The dashboard displays the execution stages and live logs, followed by the quality gate verdict.
+
+### 5. Run from Command Line
+
+Alternatively, with the required Python dependencies installed:
+
 ```powershell
 python -m engine.test_runner
 ```
-*(Or double-click `run_pipeline.bat` on Windows)*.
+
+The Windows launcher scripts are also available:
+
+- `start_all.bat`
+- `run_pipeline.bat`
+
+### 6. Stop Docker Services
+
+```powershell
+docker compose down
+```
+
+This stops the containers without deleting the persistent database volume.
 
 ---
 
-## 📊 Live Endpoints & Port Map
+## 🚦 Latest Successful Pipeline Execution
 
-| Component | Port | URL | Description |
-| :--- | :---: | :--- | :--- |
-| **Testing Hub & Web Dashboard** | `8080` | [http://localhost:8080](http://localhost:8080) | Interactive live testing hub with SSE real-time logs & analytics |
-| **Executive HTML Report** | `8080` | [http://localhost:8080/reports/executive_dashboard.html](http://localhost:8080/reports/executive_dashboard.html) | Standalone executive summary for project examiners |
-| **Application Under Test (AUT)** | `5000` | [http://localhost:5000](http://localhost:5000) | Live target web storefront & REST microservice |
-| **AUT Health Check** | `5000` | [http://localhost:5000/health](http://localhost:5000/health) | Uptime and database health status |
-| **AUT Live Telemetry Metrics** | `5000` | [http://localhost:5000/metrics](http://localhost:5000/metrics) | Request counters and latency distribution |
+**Execution ID:** `CT-RUN-1793819753`
 
----
+**Execution timestamp:** November 4, 2026, 19:15:53 UTC
 
-## 🚦 DevOps Quality Gate Policy Rules
+<badge>GATE: PASSED</badge>
 
-The framework enforces zero-tolerance quality gates before code can be promoted:
+| Metric | Actual Result |
+|---|---:|
+| Total test cases | 69 |
+| Passed | 69 |
+| Failed | 0 |
+| Skipped | 0 |
+| Test pass rate | 100% |
+| Overall code coverage | 90.4% |
+| Statements analyzed | 500 |
+| Covered statements | 452 |
+| Missed statements | 48 |
+| High/Critical security findings | 0 |
+| Performance requests | 80 |
+| Concurrent workers | 6 |
+| Mean latency | 7.65 ms |
+| P50 latency | 5.79 ms |
+| P95 latency | 24.66 ms |
+| P99 latency | 31.89 ms |
+| Maximum latency | 42.88 ms |
+| Throughput | 663.39 RPS |
+| Performance error rate | 0% |
+| Pipeline duration | 1.62 seconds |
 
-| Policy Rule | Condition | Required SLA Threshold | Observed Value | Gate Status |
-| :--- | :---: | :---: | :---: | :---: |
-| **Test Suite Pass Rate** | Strict Equality | `100.0% (0 failures)` | `100.0%` (54/54) | ✅ **PASSED** |
-| **Application Code Coverage** | Greater Than / Equal | `>= 75.0%` | `77.4%` | ✅ **PASSED** |
-| **Security Critical/High Vulnerabilities** | Less Than / Equal | `<= 0` | `0` | ✅ **PASSED** |
-| **API P95 Response Latency SLA** | Less Than / Equal | `<= 350.0 ms` | `11.4 ms` | ✅ **PASSED** |
-| **Concurrent Load Error Rate** | Less Than / Equal | `<= 1.0%` | `0.0%` | ✅ **PASSED** |
+### Quality Gate Policy Evaluation
 
----
+The framework evaluates five predefined quality policies.
+
+| Policy | Required Threshold | Actual | Status |
+|---|---:|---:|---|
+| Test pass rate | >= 100% | 100% | PASSED |
+| Code coverage | >= 75% | 90.4% | PASSED |
+| High/Critical vulnerabilities | <= 0 | 0 | PASSED |
+| P95 latency | <= 350 ms | 24.66 ms | PASSED |
+| Load error rate | <= 1% | 0% | PASSED |
+
+**Final Verdict: 5/5 policies passed.**
+
+The quality gate marked the build as eligible for deployment. This is a deployment eligibility decision; it does not mean that an actual production deployment occurred.
+
+## 📊 Application Code Coverage
+
+Coverage is measured using `coverage.py` based on executed Python source statements.
+
+| Application Module | Total Statements | Covered | Missed | Coverage |
+|---|---:|---:|---:|---:|
+| `app/__init__.py` | 1 | 0 | 1 | 0% |
+| `app/app.py` | 318 | 285 | 33 | 89.6% |
+| `app/auth.py` | 63 | 61 | 2 | 96.8% |
+| `app/models.py` | 54 | 42 | 12 | 77.8% |
+| `app/services.py` | 64 | 64 | 0 | 100% |
+| **Overall** | **500** | **452** | **48** | **90.4%** |
+
+The overall measured coverage exceeds the configured 75% quality gate threshold.
 
 ## 🧪 Testing Layer Details
 
-### Layer 1: Unit Testing (`tests/unit/`)
-- Tests core domain calculation logic without external network dependencies.
-- Coverage includes HMAC JWT token creation, signature tampering rejection, token expiration checks, volume tiered discounts, promotional codes (`DEVOPS20`), and state transition machines.
+### Layer 1: SAST Security Scanning
 
-### Layer 2: API & Integration Testing (`tests/integration/`)
-- Tests complete REST API transactions:
-  - User registration, conflict handling (`409 Conflict`), password length constraints.
-  - Role-based authorization (`403 Forbidden` when customers attempt admin actions).
-  - Product catalog querying, keyword search, inventory decrement synchronization.
-  - End-to-end checkout and payment settlement.
+The security scanner analyzes application source files to identify potentially unsafe coding patterns.
 
-### Layer 3: Performance & Load Testing (`tests/performance/`)
-- Simulates concurrent virtual users issuing requests to critical endpoints.
-- Measures response time percentiles:
-  - $P_{50}$ (Median Latency)
-  - $P_{90}$ (90% of requests faster than this)
-  - $P_{95}$ (DevOps SLA Threshold)
-  - $P_{99}$ (Worst-case tail latency)
-- Throughput calculation (Requests Per Second - RPS).
+Security testing includes:
 
-### Layer 4: DevSecOps Security Audit (`tests/security/`)
-- **SAST**: Parses Python AST syntax trees to discover dangerous function calls (`eval()`, `exec()`, `pickle.loads()`).
-- **Secret Scanning**: Regex scan for exposed API keys, AWS credentials, and hardcoded secrets.
-- **SQLi Fuzzing**: Injects standard SQL injection vectors (`' OR '1'='1`) into query endpoints to confirm parametrized query safety.
-- **DAST Audit**: Audits HTTP headers for CORS and telemetry tracking.
+- Python AST-based source-code analysis.
+- Detection of potentially dangerous function calls.
+- Secret-pattern scanning.
+- SQL injection resilience testing.
+- Security header checks.
+
+Latest execution: 5 files scanned and 0 high/critical findings.
+
+### Layer 2: Automated Functional Testing
+
+PyTest is used to execute automated unit, integration, and end-to-end workflow tests.
+
+**Unit testing (`tests/unit/`)**
+
+- Authentication and token validation.
+- Password hashing.
+- Pricing and discount calculations.
+- Payment simulation.
+- Order state transitions.
+
+**Integration testing (`tests/integration/`)**
+
+- User registration and login.
+- Authentication and authorization.
+- Product catalog and search.
+- Order creation and payment lifecycle.
+- API validation and error scenarios.
+
+**End-to-end testing (`tests/e2e/`)**
+
+- Complete enterprise checkout workflow.
+
+Latest execution: 69 passed, 0 failed, 0 skipped.
+
+### Layer 3: Code Coverage Analysis
+
+The framework uses `coverage.py` to measure executed source statements.
+
+Coverage information is collected for application modules and included in the pipeline report.
+
+### Layer 4: Performance and Load Testing
+
+The performance engine generates concurrent requests against the Application Under Test.
+
+It measures:
+
+- P50 response latency.
+- P90 response latency.
+- P95 response latency.
+- P99 response latency.
+- Minimum and maximum latency.
+- Requests per second.
+- Request failure rate.
+
+Latest execution used 6 concurrent workers and completed 80 successful requests.
+
+### Layer 5: Quality Gate Enforcement
+
+The quality gate engine evaluates the results of the preceding stages.
+
+It checks:
+
+- Minimum test pass rate.
+- Minimum code coverage.
+- Maximum permitted security findings.
+- P95 latency SLA.
+- Maximum load error rate.
+
+If all policies pass, the build is marked deployment-eligible. Otherwise, the quality gate blocks approval.
 
 ---
 
-## 🐳 Containerization & CI/CD Pipelines
+## 🐳 Containerization & CI/CD
 
 ### Docker Compose
-Run both the Application and the Continuous Testing Hub in Docker containers:
-```bash
-docker-compose up --build
+
+The platform uses Docker Compose to run the AUT and testing dashboard as separate services.
+
+```powershell
+docker compose up -d --build
 ```
 
 ### GitHub Actions
-The workflow file at `.github/workflows/ci-cd-pipeline.yml` executes on every `git push` and `pull_request`:
-1. Checks out repository.
-2. Runs SAST Security Scan.
-3. Executes 54 Automated PyTest test suites.
-4. Generates AST Code Coverage.
-5. Runs Concurrent Performance Latency Benchmarks.
-6. Evaluates Quality Gate and uploads JUnit XML and HTML artifacts.
 
-### Jenkins Pipeline
-The `Jenkinsfile` provides a declarative enterprise Jenkins pipeline with parallelized continuous testing matrix stages, automated JUnit test report publishing, and build status notifications.
+The repository contains the workflow:
+
+`.github/workflows/ci-cd-pipeline.yml`
+
+It is configured for repository push and pull-request events. Refer to the workflow file for its exact execution steps and configured jobs.
+
+### Jenkins
+
+The repository also contains a `Jenkinsfile` for Jenkins-based pipeline integration.
+
+The exact execution status of GitHub Actions and Jenkins should be verified independently from their respective build histories.
 
 ---
+
+## 📁 Project Structure
+
+```text
+Final_Project/
+│
+├── .github/
+│   └── workflows/
+│       └── ci-cd-pipeline.yml
+│
+├── app/
+│   ├── __init__.py
+│   ├── app.py
+│   ├── auth.py
+│   ├── models.py
+│   └── services.py
+│
+├── dashboard/
+│   ├── server.py
+│   ├── static/
+│   └── templates/
+│
+├── engine/
+│   ├── coverage_analyzer.py
+│   ├── quality_gate.py
+│   ├── report_generator.py
+│   └── test_runner.py
+│
+├── reports/
+│   ├── executive_dashboard.html
+│   ├── junit_report.xml
+│   └── test_report.json
+│
+├── tests/
+│   ├── e2e/
+│   ├── integration/
+│   ├── performance/
+│   ├── security/
+│   └── unit/
+│
+├── Dockerfile.app
+├── Dockerfile.dashboard
+├── docker-compose.yml
+├── Jenkinsfile
+├── requirements.txt
+├── README.md
+├── run_pipeline.bat
+└── start_all.bat
+```
+
+## 📄 Generated Reports
+
+The pipeline generates three reporting artifacts:
+
+| Report | Purpose |
+|---|---|
+| `executive_dashboard.html` | Human-readable pipeline summary and quality gate results |
+| `junit_report.xml` | Test results in JUnit-compatible XML format |
+| `test_report.json` | Detailed structured pipeline execution data |
+
+These reports provide information about test execution, security findings, coverage, performance, and quality gate evaluation.
 
 ## 🎓 Academic Viva Questions & Answers
 
-**Q1: What is Continuous Testing in DevOps?**  
-*Answer:* Continuous testing is the practice of executing automated tests as part of the software delivery pipeline to obtain immediate feedback on business risks. Unlike traditional testing at the end of a cycle, continuous testing happens at every stage (code commit, build, containerization, staging) to catch bugs early ("Shift Left").
+**Q1: What is Continuous Testing in DevOps?**
 
-**Q2: What is a Quality Gate in CI/CD?**  
-*Answer:* A Quality Gate is an automated enforcement point that evaluates code against predefined measurable metrics (e.g., minimum test pass rate, code coverage percentage, zero critical security vulnerabilities, latency SLA limits). If any metric fails, the pipeline automatically halts deployment to prevent defects from reaching production.
+Continuous Testing is the practice of executing automated tests throughout the software delivery lifecycle. It helps identify defects early and provides rapid feedback on software quality.
 
-**Q3: Why measure P95 response latency instead of average latency?**  
-*Answer:* Average latency hides outliers and spikes. If 90% of requests take 10ms but 10% take 2 seconds, the average might look acceptable (200ms), but 1 out of 10 users experiences severe slowness. The 95th percentile ($P_{95}$) ensures that 95% of all users receive fast response times within SLA bounds.
+**Q2: What is a Quality Gate in CI/CD?**
 
-**Q4: How does Static Application Security Testing (SAST) differ from DAST?**  
-*Answer:* SAST analyzes application source code without running it (white-box) using Abstract Syntax Tree (AST) inspection to find insecure patterns, buffer overflows, and hardcoded secrets. DAST tests the running application from the outside (black-box) by simulating attacks like SQL injection and cross-site scripting against active HTTP endpoints.
+A Quality Gate is an automated decision point that evaluates predefined quality conditions such as test pass rate, code coverage, security findings, and performance metrics. It approves or blocks a build based on the configured policies.
+
+**Q3: Why is P95 latency measured instead of only average latency?**
+
+Average latency can hide slow requests. P95 latency represents the response time within which 95% of measured requests are completed. It helps evaluate the experience of slower requests.
+
+**Q4: What is the difference between SAST and DAST?**
+
+SAST examines application source code to identify potentially unsafe patterns without requiring the application to be running. DAST examines a running application by sending requests and observing its responses.
+
+**Q5: What is code coverage?**
+
+Code coverage measures how much of the application's source code is executed during automated testing. This project uses `coverage.py` to measure executed source statements.
+
+**Q6: Why use Docker Compose?**
+
+Docker Compose defines and runs multiple application services together. This project uses it to run the AUT and testing dashboard as separate containers.
+
+**Q7: What is throughput?**
+
+Throughput measures how many requests a system successfully processes per second under a given workload.
+
+**Q8: What happens if a Quality Gate fails?**
+
+The build receives a failed verdict and is not approved for deployment according to the configured quality policies.
 
 ---
 
-## 📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📜 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
