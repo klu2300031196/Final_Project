@@ -1,6 +1,6 @@
 {
-  "pipeline_id": "CT-RUN-1793730209",
-  "timestamp": "2026-11-03T18:23:29.889710",
+  "pipeline_id": "CT-RUN-1793802958",
+  "timestamp": "2026-11-04T14:35:58.413626",
   "status": "PASSED",
   "stages": {
     "security_sast": {
@@ -60,20 +60,20 @@
       "successful_requests": 80,
       "failed_requests": 0,
       "error_rate_pct": 0.0,
-      "duration_seconds": 0.051,
-      "requests_per_second": 1573.23,
-      "min_latency_ms": 0.25,
-      "max_latency_ms": 28.73,
-      "mean_latency_ms": 2.84,
-      "p50_latency_ms": 1.78,
-      "p90_latency_ms": 4.92,
-      "p95_latency_ms": 7.35,
-      "p99_latency_ms": 22.56,
+      "duration_seconds": 0.123,
+      "requests_per_second": 649.14,
+      "min_latency_ms": 0.39,
+      "max_latency_ms": 40.99,
+      "mean_latency_ms": 8.65,
+      "p50_latency_ms": 5.81,
+      "p90_latency_ms": 23.78,
+      "p95_latency_ms": 27.08,
+      "p99_latency_ms": 33.22,
       "sla_passed": true,
       "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
     }
   },
-  "duration_seconds": 5.42,
+  "duration_seconds": 5.96,
   "total_tests": 61,
   "quality_gate": {
     "verdict": "PASSED",
@@ -103,7 +103,7 @@
       {
         "rule": "API P95 Response Latency SLA",
         "threshold": "<= 350.0ms",
-        "actual": "7.35ms",
+        "actual": "27.08ms",
         "status": "PASSED"
       },
       {
@@ -158,15 +158,15 @@
     "successful_requests": 80,
     "failed_requests": 0,
     "error_rate_pct": 0.0,
-    "duration_seconds": 0.051,
-    "requests_per_second": 1573.23,
-    "min_latency_ms": 0.25,
-    "max_latency_ms": 28.73,
-    "mean_latency_ms": 2.84,
-    "p50_latency_ms": 1.78,
-    "p90_latency_ms": 4.92,
-    "p95_latency_ms": 7.35,
-    "p99_latency_ms": 22.56,
+    "duration_seconds": 0.123,
+    "requests_per_second": 649.14,
+    "min_latency_ms": 0.39,
+    "max_latency_ms": 40.99,
+    "mean_latency_ms": 8.65,
+    "p50_latency_ms": 5.81,
+    "p90_latency_ms": 23.78,
+    "p95_latency_ms": 27.08,
+    "p99_latency_ms": 33.22,
     "sla_passed": true,
     "sla_criteria": "p95 <= 350ms, error_rate <= 2%"
   },
