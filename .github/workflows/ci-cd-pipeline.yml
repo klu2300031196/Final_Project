@@ -1,4 +1,4 @@
-name: DevOps Continuous Testing & Quality Gate Pipeline
+﻿name: DevOps Continuous Testing & Quality Gate Pipeline
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
   # ---------------- STAGE 1: SAST & STATIC ANALYSIS ---------------- #
   security-audit:
-    name: 🛡️ Security Audit & SAST
+    name: ðŸ›¡ï¸ Security Audit & SAST
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
@@ -32,7 +32,7 @@ jobs:
 
   # ---------------- STAGE 2: FUNCTIONAL & REGRESSION TESTS ---------------- #
   continuous-testing:
-    name: 🧪 Automated Testing & Coverage Gate
+    name: ðŸ§ª Automated Testing & Coverage Gate
     needs: security-audit
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +51,7 @@ jobs:
 
       - name: Run PyTest Test Suites (Unit, Integration, E2E)
         run: |
-          python -m pytest tests/unit tests/integration tests/e2e -v --junitxml=reports/junit_report.xml
+          python -m coverage run --source=app -m pytest tests/unit tests/integration tests/e2e -v --junitxml=reports/junit_report.xml
 
       - name: Evaluate Application Code Coverage
         run: |
@@ -66,7 +66,7 @@ jobs:
 
   # ---------------- STAGE 3: PERFORMANCE BENCHMARK ---------------- #
   performance-sla:
-    name: ⚡ Performance & Latency SLA Gate
+    name: âš¡ Performance & Latency SLA Gate
     needs: continuous-testing
     runs-on: ubuntu-latest
     steps:
@@ -84,7 +84,7 @@ jobs:
 
   # ---------------- STAGE 4: QUALITY GATE & REPORTING ---------------- #
   quality-gate-enforcement:
-    name: 🚦 DevOps Quality Gate & Artifact Publisher
+    name: ðŸš¦ DevOps Quality Gate & Artifact Publisher
     needs: [continuous-testing, performance-sla]
     runs-on: ubuntu-latest
     steps:
@@ -109,3 +109,4 @@ jobs:
             reports/executive_dashboard.html
             reports/junit_report.xml
             reports/test_report.json
+
