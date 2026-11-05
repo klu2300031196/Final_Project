@@ -3,8 +3,8 @@
 An automated DevOps Continuous Testing and Quality Engineering Framework designed to integrate functional testing, code coverage, security scanning, performance testing, and quality gate enforcement into a unified CI/CD-oriented platform.
 
 ![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions%20%7C%20Jenkins-blue)
-![Tests](https://img.shields.io/badge/Tests-69%20Passed-brightgreen)
-![Coverage](https://img.shields.io/badge/Coverage-90.4%25-green)
+![Tests](https://img.shields.io/badge/Tests-70%20Passed-brightgreen)
+![Coverage](https://img.shields.io/badge/Coverage-92.9%25-green)
 ![Security](https://img.shields.io/badge/High%2FCritical%20Vulnerabilities-0-success)
 ![Quality Gate](https://img.shields.io/badge/Quality%20Gate-PASSED-brightgreen)
 
@@ -20,7 +20,7 @@ The framework integrates five major validation stages:
 
 1. **SAST Security:** Source-code scanning and security vulnerability detection.
 2. **Automated Functional Testing:** Unit, integration, and end-to-end workflow tests using PyTest.
-3. **Code Coverage:** Actual executed source-line coverage measurement using `coverage.py`.
+3. **Code Coverage:** Actual executed source-statement coverage measurement using `coverage.py`.
 4. **Performance Testing:** Concurrent request execution with latency and throughput measurements.
 5. **Quality Gate Enforcement:** Automated evaluation of test results, coverage, security, and performance against predefined thresholds.
 
@@ -32,7 +32,7 @@ The platform also provides a web dashboard, live pipeline execution logs, persis
 flowchart TD
     Dev["Developer"] --> Git["GitHub Repository"]
 
-    Git --> CI["CI/CD Workflows"]
+    Git --> CI["GitHub Actions Workflow"]
     Git --> Jenkins["Jenkins Pipeline"]
 
     CI --> Hub["DevTestOps Hub Dashboard"]
@@ -57,7 +57,7 @@ flowchart TD
     Gate --> Decision{"Quality Gate Decision"}
 
     Decision -->|PASSED| Approved["Deployment Eligible"]
-    Decision -->|FAILED| Blocked["Deployment Blocked"]
+    Decision -->|FAILED| Blocked["Deployment Approval Blocked"]
 
     Gate --> Reports["HTML / JSON / JUnit Reports"]
 ```
@@ -86,7 +86,7 @@ flowchart TD
 
 - Python 3.10 or later
 - Git
-- Docker Desktop (for containerized execution)
+- Docker Desktop
 - Windows PowerShell or a compatible terminal
 
 ### 1. Clone the Repository
@@ -156,34 +156,34 @@ This stops the containers without deleting the persistent database volume.
 
 ## 🚦 Latest Successful Pipeline Execution
 
-**Execution ID:** `CT-RUN-1793819753`
+**Execution ID:** `CT-RUN-1793888630`
 
-**Execution timestamp:** November 4, 2026, 19:15:53 UTC
+**Execution date:** November 5, 2026
 
-<badge>GATE: PASSED</badge>
+**Execution duration:** 2.68 seconds
+
+<badge color="success">GATE: PASSED</badge>
 
 | Metric | Actual Result |
 |---|---:|
-| Total test cases | 69 |
-| Passed | 69 |
+| Total executed test cases | 70 |
+| Passed | 70 |
 | Failed | 0 |
 | Skipped | 0 |
+| Additional deselected tests | 1 |
 | Test pass rate | 100% |
-| Overall code coverage | 90.4% |
-| Statements analyzed | 500 |
-| Covered statements | 452 |
-| Missed statements | 48 |
+| Overall code coverage | 92.9% |
+| Statements analyzed | 506 |
+| Covered statements | 470 |
+| Missed statements | 36 |
 | High/Critical security findings | 0 |
 | Performance requests | 80 |
 | Concurrent workers | 6 |
-| Mean latency | 7.65 ms |
-| P50 latency | 5.79 ms |
-| P95 latency | 24.66 ms |
-| P99 latency | 31.89 ms |
-| Maximum latency | 42.88 ms |
-| Throughput | 663.39 RPS |
+| Mean latency | 4.94 ms |
+| P95 latency | 9.7 ms |
+| Throughput | 1008.09 RPS |
 | Performance error rate | 0% |
-| Pipeline duration | 1.62 seconds |
+| Pipeline duration | 2.68 seconds |
 
 ### Quality Gate Policy Evaluation
 
@@ -192,9 +192,9 @@ The framework evaluates five predefined quality policies.
 | Policy | Required Threshold | Actual | Status |
 |---|---:|---:|---|
 | Test pass rate | >= 100% | 100% | PASSED |
-| Code coverage | >= 75% | 90.4% | PASSED |
+| Code coverage | >= 75% | 92.9% | PASSED |
 | High/Critical vulnerabilities | <= 0 | 0 | PASSED |
-| P95 latency | <= 350 ms | 24.66 ms | PASSED |
+| P95 latency | <= 350 ms | 9.7 ms | PASSED |
 | Load error rate | <= 1% | 0% | PASSED |
 
 **Final Verdict: 5/5 policies passed.**
@@ -207,12 +207,12 @@ Coverage is measured using `coverage.py` based on executed Python source stateme
 
 | Application Module | Total Statements | Covered | Missed | Coverage |
 |---|---:|---:|---:|---:|
-| `app/__init__.py` | 1 | 0 | 1 | 0% |
-| `app/app.py` | 318 | 285 | 33 | 89.6% |
+| `app/__init__.py` | 1 | 1 | 0 | 100% |
+| `app/app.py` | 324 | 290 | 34 | 89.5% |
 | `app/auth.py` | 63 | 61 | 2 | 96.8% |
-| `app/models.py` | 54 | 42 | 12 | 77.8% |
+| `app/models.py` | 54 | 54 | 0 | 100% |
 | `app/services.py` | 64 | 64 | 0 | 100% |
-| **Overall** | **500** | **452** | **48** | **90.4%** |
+| **Overall** | **506** | **470** | **36** | **92.9%** |
 
 The overall measured coverage exceeds the configured 75% quality gate threshold.
 
@@ -251,18 +251,21 @@ PyTest is used to execute automated unit, integration, and end-to-end workflow t
 - Product catalog and search.
 - Order creation and payment lifecycle.
 - API validation and error scenarios.
+- Customer payment authorization checks.
 
 **End-to-end testing (`tests/e2e/`)**
 
-- Complete enterprise checkout workflow.
+- Complete checkout workflow.
 
-Latest execution: 69 passed, 0 failed, 0 skipped.
+Latest full pipeline execution: 70 passed, 0 failed, 0 skipped, with 1 additional test deselected.
 
 ### Layer 3: Code Coverage Analysis
 
 The framework uses `coverage.py` to measure executed source statements.
 
 Coverage information is collected for application modules and included in the pipeline report.
+
+Latest measured coverage: **92.9% (470 of 506 statements).**
 
 ### Layer 4: Performance and Load Testing
 
@@ -279,6 +282,8 @@ It measures:
 - Request failure rate.
 
 Latest execution used 6 concurrent workers and completed 80 successful requests.
+
+Measured P95 latency was 9.7 ms, throughput was 1008.09 requests per second, and the error rate was 0%.
 
 ### Layer 5: Quality Gate Enforcement
 
@@ -306,19 +311,23 @@ The platform uses Docker Compose to run the AUT and testing dashboard as separat
 docker compose up -d --build
 ```
 
+The Docker configuration includes service health checks and a persistent named volume for application data.
+
 ### GitHub Actions
 
 The repository contains the workflow:
 
 `.github/workflows/ci-cd-pipeline.yml`
 
-It is configured for repository push and pull-request events. Refer to the workflow file for its exact execution steps and configured jobs.
+It is configured for repository push and pull-request events. The workflow executes the complete continuous testing pipeline and publishes the generated reports as workflow artifacts.
 
 ### Jenkins
 
 The repository also contains a `Jenkinsfile` for Jenkins-based pipeline integration.
 
-The exact execution status of GitHub Actions and Jenkins should be verified independently from their respective build histories.
+The actual execution status of Jenkins and GitHub Actions should be verified independently from their respective build histories.
+
+**Note:** The current quality gate evaluates deployment eligibility. The workflow should not be described as an automatic production deployment unless a deployment stage is separately configured and verified.
 
 ---
 
@@ -421,4 +430,4 @@ The build receives a failed verdict and is not approved for deployment according
 
 ## 📜 License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+The project license should be specified through a `LICENSE` file in the repository. Until the license file is verified or added, no specific open-source license is claimed
