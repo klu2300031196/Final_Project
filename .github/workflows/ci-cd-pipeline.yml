@@ -1,22 +1,21 @@
-﻿name: DevOps Continuous Testing & Quality Gate Pipeline
+name: DevOps Continuous Testing and Quality Gate Pipeline
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [main, master, develop]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
-  # ---------------- STAGE 1: SAST & STATIC ANALYSIS ---------------- #
   security-audit:
-    name: ðŸ›¡ï¸ Security Audit & SAST
+    name: Security Audit and SAST
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -24,22 +23,20 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
+          python -m pip install -r requirements.txt
 
-      - name: Run SAST & AST Security Scanner
-        run: |
-          python -m tests.security.security_scanner
+      - name: Run SAST Security Scanner
+        run: python -m tests.security.security_scanner
 
-  # ---------------- STAGE 2: FUNCTIONAL & REGRESSION TESTS ---------------- #
   continuous-testing:
-    name: ðŸ§ª Automated Testing & Coverage Gate
+    name: Automated Testing and Coverage Gate
     needs: security-audit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
@@ -47,15 +44,17 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt || true
+          python -m pip install -r requirements.txt
 
-      - name: Run PyTest Test Suites (Unit, Integration, E2E)
+      - name: Create Reports Directory
+        run: mkdir -p reports
+
+      - name: Run PyTest with Coverage
         run: |
           python -m coverage run --source=app -m pytest tests/unit tests/integration tests/e2e -v --junitxml=reports/junit_report.xml
 
       - name: Evaluate Application Code Coverage
-        run: |
-          python -m engine.coverage_analyzer
+        run: python -m engine.coverage_analyzer
 
       - name: Archive Test Results
         uses: actions/upload-artifact@v4
@@ -64,43 +63,52 @@ jobs:
           name: test-results-junit
           path: reports/junit_report.xml
 
-  # ---------------- STAGE 3: PERFORMANCE BENCHMARK ---------------- #
   performance-sla:
-    name: âš¡ Performance & Latency SLA Gate
+    name: Performance and Latency SLA Gate
     needs: continuous-testing
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Run Multi-Threaded Load Benchmark
+      - name: Install Dependencies
         run: |
-          python -m tests.performance.load_engine
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-  # ---------------- STAGE 4: QUALITY GATE & REPORTING ---------------- #
+      - name: Run Multi-Threaded Load Benchmark
+        run: python -m tests.performance.load_engine
+
   quality-gate-enforcement:
-    name: ðŸš¦ DevOps Quality Gate & Artifact Publisher
+    name: DevOps Quality Gate and Artifact Publisher
     needs: [continuous-testing, performance-sla]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.10
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
-      - name: Execute Full Pipeline & Quality Gate Decision
+      - name: Install Dependencies
         run: |
-          python -m engine.test_runner
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
 
-      - name: Publish Executive HTML & JSON Artifacts
+      - name: Create Reports Directory
+        run: mkdir -p reports
+
+      - name: Execute Full Pipeline and Quality Gate
+        run: python -m engine.test_runner
+
+      - name: Publish Executive Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -109,4 +117,3 @@ jobs:
             reports/executive_dashboard.html
             reports/junit_report.xml
             reports/test_report.json
-
