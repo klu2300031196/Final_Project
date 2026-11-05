@@ -1,6 +1,4 @@
-version: '3.8'
-
-services:
+﻿services:
   aut-service:
     build:
       context: .
@@ -25,7 +23,10 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - aut-service
+      aut-service:
+        condition: service_healthy
+    environment:
+      - AUT_HEALTH_URL=http://aut-service:5000/health
     volumes:
       - ./reports:/app/reports
     restart: unless-stopped

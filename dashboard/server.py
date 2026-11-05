@@ -96,18 +96,30 @@ def index():
 
 @app.route("/api/status")
 def get_status():
+    """Return dashboard status and AUT connectivity."""
+
     aut_status = "UNKNOWN"
+
+    # Local development uses localhost.
+    # Docker Compose overrides this with http://aut-service:5000/health.
+    aut_url = os.environ.get(
+        "AUT_HEALTH_URL",
+        "http://127.0.0.1:5000/health"
+    )
 
     try:
         res = requests.get(
-            "http://127.0.0.1:5000/health",
-            timeout=1
+            aut_url,
+            timeout=2
         )
 
         if res.status_code == 200:
             aut_status = "ONLINE"
+        else:
+            aut_status = "OFFLINE"
 
-    except Exception:
+    except requests.RequestException as e:
+        print(f"[INFO] AUT health check unavailable: {e}")
         aut_status = "STANDALONE_READY"
 
     return jsonify({

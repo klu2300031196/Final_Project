@@ -1,0 +1,16 @@
+﻿.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.git/
+.gitignore
+.vscode/
+.idea/
+temp_aut_check.js
+*.backup
+*.sqlite
+*.sqlite3
+
+.env
+.env.*

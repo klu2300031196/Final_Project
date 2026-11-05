@@ -1,4 +1,4 @@
-name: DevOps Continuous Testing and Quality Gate Pipeline
+﻿name: DevOps Continuous Testing and Quality Gate Pipeline
 
 on:
   push:
@@ -7,31 +7,19 @@ on:
     branches: [main, master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: continuous-testing-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  security-audit:
-    name: Security Audit and SAST
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Run SAST Security Scanner
-        run: python -m tests.security.security_scanner
-
   continuous-testing:
-    name: Automated Testing and Coverage Gate
-    needs: security-audit
+    name: Full DevOps Testing and Quality Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
@@ -40,6 +28,8 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.10"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
 
       - name: Install Dependencies
         run: |
@@ -49,66 +39,10 @@ jobs:
       - name: Create Reports Directory
         run: mkdir -p reports
 
-      - name: Run PyTest with Coverage
-        run: |
-          python -m coverage run --source=app -m pytest tests/unit tests/integration tests/e2e -v --junitxml=reports/junit_report.xml
-
-      - name: Evaluate Application Code Coverage
-        run: python -m engine.coverage_analyzer
-
-      - name: Archive Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results-junit
-          path: reports/junit_report.xml
-
-  performance-sla:
-    name: Performance and Latency SLA Gate
-    needs: continuous-testing
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Run Multi-Threaded Load Benchmark
-        run: python -m tests.performance.load_engine
-
-  quality-gate-enforcement:
-    name: DevOps Quality Gate and Artifact Publisher
-    needs: [continuous-testing, performance-sla]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.10"
-
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-
-      - name: Create Reports Directory
-        run: mkdir -p reports
-
-      - name: Execute Full Pipeline and Quality Gate
+      - name: Execute Complete DevOps Pipeline
         run: python -m engine.test_runner
 
-      - name: Publish Executive Reports
+      - name: Publish All Pipeline Reports
         uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -117,3 +51,5 @@ jobs:
             reports/executive_dashboard.html
             reports/junit_report.xml
             reports/test_report.json
+          if-no-files-found: warn
+          retention-days: 14

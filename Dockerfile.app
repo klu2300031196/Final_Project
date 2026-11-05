@@ -1,4 +1,4 @@
-# Multi-stage Dockerfile for Application Under Test (AUT)
+﻿# Multi-stage Dockerfile for Application Under Test (AUT)
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -16,7 +16,7 @@ COPY app/ /app/app/
 COPY requirements.txt /app/
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt || true
+RUN python -m pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 5000
 

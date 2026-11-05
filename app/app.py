@@ -316,11 +316,23 @@ def create_app(db_path=None):
             enriched_items = []
             # Validate inventory and enrich item pricing
             for itm in items:
+                if not isinstance(itm, dict):
+                    return jsonify({
+                        "error": "Each order item must be a valid JSON object."
+                    }), 400
+
                 prod_id = itm.get("product_id")
                 qty = itm.get("quantity", 1)
 
-                if not prod_id or qty <= 0:
-                    return jsonify({"error": "Invalid product_id or quantity in items"}), 400
+                if (
+                    not prod_id
+                    or isinstance(qty, bool)
+                    or not isinstance(qty, int)
+                    or qty <= 0
+                ):
+                    return jsonify({
+                        "error": "Invalid product_id or quantity. Quantity must be a positive integer."
+                    }), 400
 
                 cur.execute("SELECT id, name, price, stock FROM products WHERE id = ?", (prod_id,))
                 prod = cur.fetchone()
@@ -422,6 +434,15 @@ def create_app(db_path=None):
         if not order:
             conn.close()
             return jsonify({"error": "Order not found"}), 404
+
+        # Only the order owner or authorized admin/tester can pay
+        current_user = request.current_user
+        if (
+            current_user["role"] not in ["admin", "tester"]
+            and str(order["user_id"]) != str(current_user["sub"])
+        ):
+            conn.close()
+            return jsonify({"error": "Unauthorized access to order"}), 403
 
         if order["status"] != "PENDING":
             conn.close()
